@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizátor Turnajů v1.4 - s vyřazovacím pavoukem</title>
+    <title>Organizátor Turnajů v1.5 - s ukládáním turnaje</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -113,6 +113,8 @@
         .btn-warning:hover { background: #e0a800; }
         .btn-info { background: #17a2b8; color: white; }
         .btn-info:hover { background: #138496; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
         
         .button-group { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
         
@@ -133,6 +135,93 @@
             margin: 20px 0;
             border-radius: 5px;
             color: #856404;
+        }
+        
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            color: #155724;
+        }
+        
+        /* Úvodní obrazovka */
+        .welcome-screen {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .welcome-title {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 50px;
+        }
+        
+        .choice-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .choice-card {
+            background: white;
+            border: 3px solid #e9ecef;
+            border-radius: 15px;
+            padding: 40px 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .choice-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .choice-card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .choice-card-title {
+            font-size: 1.5em;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .choice-card-desc {
+            color: #666;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+        
+        .saved-tournament-info {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        
+        .saved-tournament-info h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .saved-tournament-info p {
+            margin: 5px 0;
+            color: #333;
         }
         
         .groups-preview {
@@ -247,148 +336,82 @@
         .group-bar {
             background: #667eea;
             color: white;
-            padding: 5px 10px;
+            padding: 8px 12px;
             border-radius: 5px;
+            font-weight: 600;
             font-size: 0.9em;
         }
         
-        .seeding-section { margin: 30px 0; }
-        
-        .group-seeding {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 15px 0;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
         }
         
-        .group-seeding h4 { color: #667eea; margin-bottom: 15px; }
-        
-        .seeded-player {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin: 10px 0;
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
         }
         
-        .seeded-player select {
-            flex: 1;
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        tr:hover { background: #f8f9fa; }
+        
+        .score-input {
+            max-width: 100px;
             padding: 8px;
             border: 2px solid #e9ecef;
             border-radius: 5px;
+            font-size: 1em;
+            text-align: center;
         }
         
-        .seeded-player button {
-            padding: 8px 15px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        .score-input:focus {
+            outline: none;
+            border-color: #667eea;
         }
         
-        .add-seeded-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 8px 15px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-        }
-        
-        .add-seeded-btn:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-        }
-        
-        .radio-group { display: flex; gap: 20px; margin-top: 10px; flex-wrap: wrap; }
-        .radio-option { display: flex; align-items: center; gap: 8px; }
-        .radio-option input[type="radio"] { width: auto; }
-        
-        .welcome-screen { text-align: center; padding: 60px 20px; }
-        .welcome-screen h2 { font-size: 2em; color: #667eea; margin-bottom: 40px; }
-        
-        .welcome-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        
-        .welcome-btn {
-            padding: 20px;
-            font-size: 1.2em;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        #fileInput { display: none; }
-        
-        /* RESULTS TABLE STYLES */
-        .results-section {
-            margin: 30px 0;
-        }
-        
-        .group-results {
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        
-        .group-results h3 {
+        .score-display {
+            font-weight: bold;
             color: #667eea;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
-        
-        .results-table-wrapper {
-            overflow-x: auto;
-            margin: 20px 0;
-            -webkit-overflow-scrolling: touch;
+            font-size: 1.1em;
         }
         
         .results-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9em;
-        }
-        
-        .results-table th,
-        .results-table td {
-            padding: 10px;
-            text-align: center;
-            border: 1px solid #dee2e6;
+            margin: 10px 0;
+            font-size: 0.95em;
         }
         
         .results-table th {
             background: #667eea;
             color: white;
+            padding: 10px 8px;
+            text-align: center;
             font-weight: 600;
+            font-size: 0.85em;
         }
         
-        .results-table th.player-name {
-            text-align: left;
-            min-width: 150px;
+        .results-table td {
+            text-align: center;
+            padding: 8px 5px;
+            border: 1px solid #e9ecef;
         }
         
-        .results-table td.player-name {
+        .results-table .player-name {
             text-align: left;
             font-weight: 600;
             background: #f8f9fa;
         }
         
-        .results-table td.diagonal {
+        .results-table .diagonal {
             background: #e9ecef;
             color: #999;
         }
@@ -397,1979 +420,30 @@
             background: #d4edda;
         }
         
-        .results-table tr.advancing td.player-name {
-            background: #c3e6cb;
-            font-weight: bold;
-        }
-        
-        .score-input {
-            width: 70px;
-            padding: 5px;
-            border: 2px solid #e9ecef;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 0.9em;
-        }
-        
-        .score-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .score-input.filled {
-            background: #e7f3ff;
-            border-color: #667eea;
-        }
-        
         .advancing-badge {
             background: #28a745;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 0.85em;
-            margin-left: 5px;
-        }
-        
-        /* Styly pro vyřazovací pavouk */
-        .playoff-section {
-            margin: 30px 0;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .bracket {
-            display: flex;
-            gap: 60px;
-            padding: 20px;
-            min-width: fit-content;
-        }
-        
-        .bracket-round {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            min-width: 250px;
-        }
-        
-        .bracket-round h3 {
-            text-align: center;
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.2em;
-        }
-        
-        .bracket-match {
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            margin: 20px 0 15px 0;
-            overflow: visible;
-            position: relative;
-        }
-        
-        .bracket-match.completed {
-            border-color: #28a745;
-        }
-        
-        .match-player {
-            padding: 12px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e9ecef;
-            transition: all 0.3s;
-        }
-        
-        .match-player:last-child {
-            border-bottom: none;
-        }
-        
-        .match-player.winner {
-            background: #d4edda;
-            font-weight: bold;
-        }
-        
-        .match-player.loser {
-            background: #f8f9fa;
-            opacity: 0.6;
-        }
-        
-        .player-name-playoff {
-            flex: 1;
-            font-size: 0.95em;
-        }
-        
-        .player-name-playoff.tbd {
-            font-style: italic;
-            color: #999;
-        }
-        
-        .player-seed {
-            font-size: 0.8em;
-            color: #999;
-            font-weight: normal;
-        }
-        
-        .player-score {
-            font-weight: bold;
-            font-size: 1.1em;
-            min-width: 40px;
-            text-align: center;
-        }
-        
-        .score-input-playoff {
-            width: 50px;
-            padding: 5px;
-            text-align: center;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-        
-        .score-input-playoff:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .match-vs {
-            text-align: center;
-            padding: 5px;
-            font-size: 0.8em;
-            color: #999;
-            background: #f8f9fa;
-        }
-        
-        .round-connector {
-            position: relative;
-        }
-        
-        .bracket-match-number {
-            position: absolute;
-            top: -8px;
-            left: 10px;
-            background: #667eea;
             color: white;
             padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.75em;
+            border-radius: 3px;
+            font-size: 0.7em;
+            margin-left: 5px;
             font-weight: bold;
         }
         
-        .final-winner {
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            border: 3px solid #ffc107;
-            padding: 20px;
-            text-align: center;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        
-        .final-winner h3 {
-            color: #333;
-            font-size: 1.8em;
-            margin-bottom: 10px;
-        }
-        
-        .final-winner .winner-name {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #667eea;
-        }
-        
-        /* ============================================ */
-        /* RESPONZIVITA PRO MOBILNÍ ZAŘÍZENÍ */
-        /* ============================================ */
-        
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .header h1 {
-                font-size: 1.8em;
-            }
-            
-            .header p {
-                font-size: 0.9em;
-            }
-            
-            .content {
-                padding: 20px 15px;
-            }
-            
-            .step-title {
-                font-size: 1.4em;
-            }
-            
-            /* Tabulky s výsledky - horizontální scroll */
-            .results-table-wrapper {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .results-table {
-                min-width: 600px;
-            }
-            
-            /* Pavouk - horizontální scroll */
-            .playoff-section {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .bracket {
-                min-width: 800px;
-            }
-            
-            .bracket-round {
-                min-width: 200px;
-            }
-            
-            /* Skupiny - responzivní grid */
-            .groups-preview {
-                grid-template-columns: 1fr;
-            }
-            
-            .button-group {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            /* Formuláře */
-            .form-group input[type="number"] {
-                max-width: 100%;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 1.5em;
-            }
-            
-            .step-title {
-                font-size: 1.2em;
-            }
-            
-            .info-box, .warning-box {
-                padding: 15px;
-                font-size: 0.9em;
-            }
-        }
-        
-        /* ============================================ */
-        /* TISK */
-        /* ============================================ */
-        
-        @media print {
-            @page {
-                size: landscape;
-                margin: 1cm;
-            }
-            
-            body {
-                background: white;
-                padding: 0;
-            }
-            
-            .header, .button-group, .btn, .no-print {
-                display: none !important;
-            }
-            
-            .container {
-                box-shadow: none;
-                max-width: 100%;
-            }
-            
-            .content {
-                padding: 10px;
-            }
-            
-            /* Zabránění rozdělení prvků při tisku */
-            .group-card, 
-            .group-results, 
-            .results-table-wrapper,
-            .bracket-match,
-            .bracket-round {
-                page-break-inside: avoid;
-                break-inside: avoid;
-            }
-            
-            .results-table {
-                page-break-inside: avoid;
-                break-inside: avoid;
-            }
-            
-            /* Každá skupina může začít na nové stránce */
-            .group-results {
-                page-break-after: auto;
-                margin-bottom: 30px;
-            }
-            
-            .group-card {
-                border: 1px solid #333;
-                margin-bottom: 20px;
-            }
-            
-            /* Input fieldy při tisku */
-            .score-input, 
-            .score-input-playoff {
-                border: 1px solid #ccc;
-                padding: 2px;
-                background: white;
-            }
-            
-            /* Pavouk při tisku */
-            .bracket {
-                gap: 40px;
-            }
-            
-            /* Tisk konečného pořadí - landscape (aby se vešlo víc řádků) */
-            body.print-ranking-only {
-                width: 100%;
-            }
-            
-            body.print-ranking-only .step:not(#step5) {
-                display: none !important;
-            }
-            
-            body.print-ranking-only #step5 h2 {
-                display: none;
-            }
-            
-            body.print-ranking-only .info-box {
-                display: none !important;
-            }
-            
-            body.print-ranking-only details {
-                display: none !important;
-            }
-            
-            /* Nadpis může být samostatně */
-            body.print-ranking-only .ranking-header {
-                page-break-after: avoid;
-                margin-bottom: 10px;
-            }
-            
-            body.print-ranking-only .ranking-header h2,
-            body.print-ranking-only .ranking-header h3 {
-                font-size: 1.3em;
-                margin: 5px 0;
-            }
-            
-            /* Tabulka - zabránění rozdělení */
-            body.print-ranking-only .ranking-table-container {
-                page-break-inside: avoid !important;
-                padding: 15px !important;
-                margin: 0 !important;
-            }
-            
-            /* Zajištění, že tabulka se nevleze na více stránek */
-            body.print-ranking-only table {
-                page-break-inside: avoid !important;
-                break-inside: avoid-page !important;
-                display: block;
-                font-size: 0.7em;
-                width: 100%;
-            }
-            
-            body.print-ranking-only thead {
-                display: table-header-group;
-            }
-            
-            body.print-ranking-only tbody {
-                display: table-row-group;
-                page-break-inside: avoid !important;
-            }
-            
-            body.print-ranking-only tr {
-                page-break-inside: avoid !important;
-                page-break-after: auto;
-            }
-            
-            body.print-ranking-only .container {
-                width: 100%;
-                max-width: 100%;
-            }
-            
-            body.print-ranking-only th,
-            body.print-ranking-only td {
-                padding: 4px 8px !important;
-                line-height: 1.2;
-            }
-            
-            /* Zmenšení paddingu v containeru */
-            body.print-ranking-only .content {
-                padding: 5px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header no-print">
-            <h1>🏓 ORGANIZÁTOR TURNAJŮ</h1>
-            <p>Stolní tenis - kompletní správa turnaje</p>
-            <div class="version">verze 1.4 - s vyřazovacím pavoukem</div>
-        </div>
-
-        <div class="content">
-            <!-- Steps 0-3 jsou stejné jako v v1.2, zkráceno pro délku -->
-            
-            <!-- KROK 0: Uvítací obrazovka -->
-            <div id="step0" class="step active">
-                <div class="welcome-screen">
-                    <h2>Vítejte v organizátoru turnajů</h2>
-                    <div class="welcome-buttons">
-                        <button class="btn btn-primary welcome-btn" onclick="startNewTournament()">
-                            📝 Vytvořit nový turnaj
-                        </button>
-                        <button class="btn btn-secondary welcome-btn" onclick="document.getElementById('fileInput').click()">
-                            📥 Načíst uložený turnaj
-                        </button>
-                    </div>
-                    <input type="file" id="fileInput" accept=".json" onchange="loadTournament(event)">
-                </div>
-            </div>
-
-            <!-- Zkrácené kroky 1, 1.5, 2, 2.5, 3 pro stručnost -->
-            <div id="step1" class="step">
-                <h2 class="step-title">Krok 1: Základní nastavení</h2>
-                <div class="form-group">
-                    <label for="tournamentName">Název turnaje:</label>
-                    <input type="text" id="tournamentName" value="Turnaj ve stolním tenisu">
-                </div>
-                <div class="form-group">
-                    <label for="playerCount">Počet hráčů:</label>
-                    <input type="number" id="playerCount" min="10" max="100" value="30">
-                </div>
-                <div class="form-group">
-                    <label for="groupCount">Počet skupin:</label>
-                    <input type="number" id="groupCount" min="2" max="20" value="6">
-                </div>
-                <div class="form-group">
-                    <label for="advancingCount">Počet postupujících:</label>
-                    <select id="advancingCount">
-                        <option value="1">1 hráč</option>
-                        <option value="2" selected>2 hráči</option>
-                        <option value="3">3 hráči</option>
-                    </select>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-secondary" onclick="goToStep(0)">← Zpět</button>
-                    <button class="btn btn-primary" onclick="checkDivisibility()">Další →</button>
-                </div>
-            </div>
-
-            <div id="step1_5" class="step">
-                <h2 class="step-title">Krok 1.5: Výběr rozdělení</h2>
-                <div class="warning-box">
-                    <strong>⚠️ Upozornění</strong>
-                    <span id="divisionWarning"></span>
-                </div>
-                <div id="variantsContainer"></div>
-                <div class="button-group">
-                    <button class="btn btn-secondary" onclick="goToStep(1)">← Zpět</button>
-                    <button class="btn btn-primary" onclick="confirmDivision()">Pokračovat →</button>
-                </div>
-            </div>
-
-            <div id="step2" class="step">
-                <h2 class="step-title">Krok 2: Zadání hráčů</h2>
-                <div class="form-group">
-                    <label>Seznam hráčů:</label>
-                    <textarea id="playersList" placeholder="Jméno Příjmení&#10;..."></textarea>
-                </div>
-                <div class="player-count">
-                    Zadáno: <span id="currentPlayerCount">0</span> / <span id="expectedPlayerCount">30</span>
-                </div>
-                <div id="playerError" class="error-msg" style="display: none;">
-                    ⚠️ Počet hráčů neodpovídá!
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-secondary" onclick="goToStep(1)">← Zpět</button>
-                    <button class="btn btn-primary" onclick="validateAndContinue()">Další →</button>
-                </div>
-            </div>
-
-            <div id="step2_5" class="step">
-                <h2 class="step-title">Krok 2.5: Nasazení hráčů (volitelné)</h2>
-                <div class="info-box">
-                    <strong>ℹ️ Nasazení:</strong>
-                    Můžete nasadit hráče (0-2 na skupinu).
-                </div>
-                <div class="form-group">
-                    <label>Chcete nasadit hráče?</label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" name="seedingMethod" value="none" id="seedingNone" checked onchange="toggleSeeding()">
-                            <label for="seedingNone">Ne</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" name="seedingMethod" value="manual" id="seedingManual" onchange="toggleSeeding()">
-                            <label for="seedingManual">Ano</label>
-                        </div>
-                    </div>
-                </div>
-                <div id="seedingContainer" style="display: none;">
-                    <div class="seeding-section" id="seedingGroups"></div>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-secondary" onclick="goToStep(2)">← Zpět</button>
-                    <button class="btn btn-primary" onclick="proceedToGroupsPreview()">Losovat →</button>
-                </div>
-            </div>
-
-            <div id="step3" class="step">
-                <h2 class="step-title">Krok 3: Náhled skupin</h2>
-                <div class="info-box">
-                    <strong>✅ Skupiny vylosovány!</strong>
-                </div>
-                <div id="groupsPreview" class="groups-preview"></div>
-                <div class="button-group">
-                    <button class="btn btn-secondary no-print" onclick="goToStep('2_5')">← Zpět</button>
-                    <button class="btn btn-warning no-print" onclick="redrawGroups()">🎲 Znovu</button>
-                    <button class="btn btn-info no-print" onclick="printSchedules()">📄 Tisk</button>
-                    <button class="btn btn-success no-print" onclick="startResults()">✅ Začít zadávání výsledků</button>
-                </div>
-            </div>
-
-            <!-- KROK 4: Zadávání výsledků (NOVÝ!) -->
-            <div id="step4" class="step">
-                <h2 class="step-title">Krok 4: Zadávání výsledků</h2>
-                
-                <div class="info-box">
-                    <strong>📊 Zadejte výsledky zápasů</strong>
-                    Formát: XX:YY (např. 21:13 nebo 2:1). První vyšší číslo = výhra = 2 body.
-                </div>
-
-                <div id="resultsContainer" class="results-section">
-                    <!-- Zde se vygenerují tabulky pro každou skupinu -->
-                </div>
-
-                <div class="button-group">
-                    <button class="btn btn-secondary no-print" onclick="goToStep(3)">← Zpět k náhledu</button>
-                    <button class="btn btn-info no-print" onclick="printResults()">📄 Vytisknout výsledky</button>
-                    <button class="btn btn-warning no-print" onclick="saveResults()">💾 Uložit průběžné výsledky</button>
-                    <button class="btn btn-success no-print" onclick="startPlayoffs()">➡️ Pokračovat na vyřazovací část</button>
-                </div>
-            </div>
-
-            <!-- KROK 4.5: Vyřazovací pavouk -->
-            <div id="step4_5" class="step">
-                <h2 class="step-title">Vyřazovací část - Pavouk</h2>
-                
-                <div class="info-box">
-                    <strong>🏆 Vyřazovací zápasy</strong>
-                    <span id="playoffInfo"></span>
-                    Zadávejte výsledky (formát XX:YY, např. 3:1 nebo 21:19). Vyšší skóre = výhra.
-                </div>
-
-                <div id="playoffContainer" class="playoff-section">
-                    <!-- Zde se vygeneruje pavouk -->
-                </div>
-
-                <div class="button-group">
-                    <button class="btn btn-secondary no-print" onclick="goToStep(4)">← Zpět na skupiny</button>
-                    <button class="btn btn-info no-print" onclick="printResults()">📄 Vytisknout pavouk</button>
-                    <button class="btn btn-success no-print" onclick="finishTournament()">✅ Dokončit turnaj</button>
-                </div>
-            </div>
-
-            <!-- KROK 5: Dokončení -->
-            <div id="step5" class="step">
-                <h2 class="step-title">Turnaj dokončen!</h2>
-                <div class="info-box">
-                    <strong>🏆 Turnaj byl úspěšně dokončen!</strong><br>
-                    Můžete vytisknout konečné pořadí, uložit výsledky, nebo vygenerovat veřejnou verzi.<br><br>
-                    <strong>🌐 Veřejná verze:</strong> Vytvoří zamrzlý HTML soubor s výsledky, který můžete nahrát na web (GitHub Pages, webhosting...) a sdílet s účastníky. Výsledky budou viditelné, ale nikdo je nebude moci měnit.
-                </div>
-                <div id="finalSummary"></div>
-                <div class="button-group">
-                    <button class="btn btn-info no-print" onclick="printFinalRanking()">📄 Vytisknout konečné pořadí</button>
-                    <button class="btn btn-warning no-print" onclick="generatePublicVersion()">🌐 Vygenerovat veřejnou verzi</button>
-                    <button class="btn btn-primary" onclick="saveResults()">💾 Uložit výsledky</button>
-                    <button class="btn btn-secondary" onclick="location.reload()">🔄 Nový turnaj</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let tournamentData = {
-            name: '',
-            playerCount: 30,
-            groupCount: 6,
-            advancingCount: 2,
-            players: [],
-            groups: [],
-            seededPlayers: {},
-            division: null,
-            matchSchedules: [],
-            results: [], // Výsledky pro každou skupinu
-            playoff: null // Vyřazovací pavouk
-        };
-
-        let selectedVariant = null;
-
-        function startNewTournament() {
-            goToStep(1);
-        }
-
-        function goToStep(stepNumber) {
-            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
-            document.getElementById('step' + stepNumber).classList.add('active');
-            if (stepNumber === 2) updateExpectedCount();
-        }
-
-        function updateExpectedCount() {
-            document.getElementById('expectedPlayerCount').textContent = document.getElementById('playerCount').value;
-        }
-
-        function checkDivisibility() {
-            const playerCount = parseInt(document.getElementById('playerCount').value);
-            const groupCount = parseInt(document.getElementById('groupCount').value);
-            
-            tournamentData.playerCount = playerCount;
-            tournamentData.groupCount = groupCount;
-            tournamentData.name = document.getElementById('tournamentName').value;
-            tournamentData.advancingCount = parseInt(document.getElementById('advancingCount').value);
-
-            if (playerCount % groupCount === 0) {
-                tournamentData.division = {
-                    type: 'even',
-                    groups: Array(groupCount).fill(playerCount / groupCount)
-                };
-                goToStep(2);
-            } else {
-                showDivisionVariants();
-                goToStep('1_5');
-            }
-        }
-
-        function showDivisionVariants() {
-            const playerCount = tournamentData.playerCount;
-            const groupCount = tournamentData.groupCount;
-            
-            document.getElementById('divisionWarning').textContent = 
-                `${playerCount} hráčů nelze rovnoměrně rozdělit do ${groupCount} skupin.`;
-
-            const container = document.getElementById('variantsContainer');
-            container.innerHTML = '';
-
-            const playersPerGroup = Math.floor(playerCount / groupCount);
-            const remainder = playerCount % groupCount;
-            
-            const variantA = document.createElement('div');
-            variantA.className = 'variant-option';
-            variantA.onclick = () => selectVariant('A');
-            variantA.id = 'variantA';
-            
-            let groupsA = [];
-            for (let i = 0; i < groupCount; i++) {
-                groupsA.push(i < remainder ? playersPerGroup + 1 : playersPerGroup);
-            }
-            
-            variantA.innerHTML = `
-                <h4>○ VARIANTA A: Nerovnoměrné (${groupCount} skupin)</h4>
-                <p>${remainder} skupin po ${playersPerGroup + 1}, ${groupCount - remainder} skupin po ${playersPerGroup}</p>
-                <div class="variant-preview">
-                    ${groupsA.map((count, i) => `<div class="group-bar">Sk. ${i+1}: ${count}</div>`).join('')}
-                </div>
-            `;
-            container.appendChild(variantA);
-
-            const divisors = [];
-            for (let i = 2; i <= Math.min(playerCount, 20); i++) {
-                if (playerCount % i === 0) divisors.push(i);
-            }
-
-            divisors.slice(0, 3).forEach((div, index) => {
-                const playersPerGroup = playerCount / div;
-                const variantB = document.createElement('div');
-                variantB.className = 'variant-option';
-                variantB.onclick = () => selectVariant('B' + index);
-                variantB.id = 'variantB' + index;
-                
-                variantB.innerHTML = `
-                    <h4>○ VARIANTA ${String.fromCharCode(66 + index)}: ${div} skupin (rovnoměrně)</h4>
-                    <p>${div} skupin po ${playersPerGroup} hráčích</p>
-                    <div class="variant-preview">
-                        ${Array(div).fill(playersPerGroup).map((count, i) => `<div class="group-bar">Sk. ${i+1}: ${count}</div>`).join('')}
-                    </div>
-                `;
-                container.appendChild(variantB);
-            });
-
-            selectVariant('A');
-        }
-
-        function selectVariant(variant) {
-            document.querySelectorAll('.variant-option').forEach(el => {
-                el.classList.remove('selected');
-                el.querySelector('h4').textContent = el.querySelector('h4').textContent.replace('●', '○');
-            });
-
-            const element = document.getElementById('variant' + variant);
-            if (element) {
-                element.classList.add('selected');
-                element.querySelector('h4').textContent = element.querySelector('h4').textContent.replace('○', '●');
-                selectedVariant = variant;
-            }
-        }
-
-        function confirmDivision() {
-            if (!selectedVariant) {
-                alert('Vyberte variantu!');
-                return;
-            }
-
-            const playerCount = tournamentData.playerCount;
-            const groupCount = tournamentData.groupCount;
-
-            if (selectedVariant === 'A') {
-                const playersPerGroup = Math.floor(playerCount / groupCount);
-                const remainder = playerCount % groupCount;
-                const groups = [];
-                for (let i = 0; i < groupCount; i++) {
-                    groups.push(i < remainder ? playersPerGroup + 1 : playersPerGroup);
-                }
-                tournamentData.division = { type: 'uneven', groups: groups };
-                tournamentData.groupCount = groupCount;
-            } else {
-                const variantIndex = parseInt(selectedVariant.substring(1));
-                const divisors = [];
-                for (let i = 2; i <= Math.min(playerCount, 20); i++) {
-                    if (playerCount % i === 0) divisors.push(i);
-                }
-                const newGroupCount = divisors[variantIndex];
-                const playersPerGroup = playerCount / newGroupCount;
-                tournamentData.division = { 
-                    type: 'even', 
-                    groups: Array(newGroupCount).fill(playersPerGroup) 
-                };
-                tournamentData.groupCount = newGroupCount;
-            }
-
-            goToStep(2);
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const textarea = document.getElementById('playersList');
-            if (textarea) {
-                textarea.addEventListener('input', function() {
-                    const lines = this.value.split('\n').filter(line => line.trim());
-                    document.getElementById('currentPlayerCount').textContent = lines.length;
-                });
-            }
-        });
-
-        function validateAndContinue() {
-            const textarea = document.getElementById('playersList');
-            const players = textarea.value.split('\n').filter(line => line.trim());
-            const expected = tournamentData.playerCount;
-
-            if (players.length !== expected) {
-                document.getElementById('playerError').style.display = 'block';
-                return;
-            }
-
-            document.getElementById('playerError').style.display = 'none';
-            tournamentData.players = players;
-            prepareSeeding();
-            goToStep('2_5');
-        }
-
-        function prepareSeeding() {
-            const container = document.getElementById('seedingGroups');
-            container.innerHTML = '';
-            const groupCount = tournamentData.groupCount;
-            
-            for (let i = 0; i < groupCount; i++) {
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'group-seeding';
-                groupDiv.innerHTML = `
-                    <h4>Skupina ${i + 1}</h4>
-                    <div id="seeded-group-${i}"></div>
-                    <button class="add-seeded-btn" onclick="addSeededPlayer(${i})" id="add-btn-${i}">
-                        + Přidat nasazeného
-                    </button>
-                `;
-                container.appendChild(groupDiv);
-            }
-            tournamentData.seededPlayers = {};
-        }
-
-        function toggleSeeding() {
-            const method = document.querySelector('input[name="seedingMethod"]:checked').value;
-            document.getElementById('seedingContainer').style.display = method === 'manual' ? 'block' : 'none';
-        }
-
-        function addSeededPlayer(groupIndex) {
-            if (!tournamentData.seededPlayers[groupIndex]) {
-                tournamentData.seededPlayers[groupIndex] = [];
-            }
-
-            if (tournamentData.seededPlayers[groupIndex].length >= 2) {
-                alert('Max 2 hráči na skupinu!');
-                return;
-            }
-
-            const container = document.getElementById(`seeded-group-${groupIndex}`);
-            const playerId = `seeded-${groupIndex}-${Date.now()}`;
-            const usedPlayers = Object.values(tournamentData.seededPlayers).flat();
-            const availablePlayers = tournamentData.players.filter(p => !usedPlayers.includes(p));
-
-            const playerDiv = document.createElement('div');
-            playerDiv.className = 'seeded-player';
-            playerDiv.id = playerId;
-            playerDiv.innerHTML = `
-                <select onchange="updateSeededPlayer(${groupIndex}, '${playerId}')">
-                    <option value="">-- Vyberte --</option>
-                    ${availablePlayers.map(p => `<option value="${p}">${p}</option>`).join('')}
-                </select>
-                <button onclick="removeSeededPlayer(${groupIndex}, '${playerId}')">×</button>
-            `;
-
-            container.appendChild(playerDiv);
-        }
-
-        function updateSeededPlayer(groupIndex, playerId) {
-            const select = document.querySelector(`#${playerId} select`);
-            const player = select.value;
-
-            if (!tournamentData.seededPlayers[groupIndex]) {
-                tournamentData.seededPlayers[groupIndex] = [];
-            }
-
-            const oldValue = select.dataset.oldValue;
-            if (oldValue) {
-                const idx = tournamentData.seededPlayers[groupIndex].indexOf(oldValue);
-                if (idx > -1) tournamentData.seededPlayers[groupIndex].splice(idx, 1);
-            }
-
-            if (player) {
-                tournamentData.seededPlayers[groupIndex].push(player);
-                select.dataset.oldValue = player;
-            }
-
-            refreshAvailablePlayers();
-        }
-
-        function removeSeededPlayer(groupIndex, playerId) {
-            const select = document.querySelector(`#${playerId} select`);
-            const player = select.value;
-
-            if (player && tournamentData.seededPlayers[groupIndex]) {
-                const idx = tournamentData.seededPlayers[groupIndex].indexOf(player);
-                if (idx > -1) tournamentData.seededPlayers[groupIndex].splice(idx, 1);
-            }
-
-            document.getElementById(playerId).remove();
-            document.getElementById(`add-btn-${groupIndex}`).disabled = false;
-            refreshAvailablePlayers();
-        }
-
-        function refreshAvailablePlayers() {
-            const usedPlayers = Object.values(tournamentData.seededPlayers).flat();
-            const availablePlayers = tournamentData.players.filter(p => !usedPlayers.includes(p));
-
-            document.querySelectorAll('.seeded-player select').forEach(select => {
-                const currentValue = select.value;
-                select.innerHTML = `<option value="">-- Vyberte --</option>`;
-                availablePlayers.forEach(p => {
-                    select.innerHTML += `<option value="${p}">${p}</option>`;
-                });
-                if (currentValue && !availablePlayers.includes(currentValue)) {
-                    select.innerHTML += `<option value="${currentValue}" selected>${currentValue}</option>`;
-                } else if (currentValue) {
-                    select.value = currentValue;
-                }
-            });
-        }
-
-        function proceedToGroupsPreview() {
-            drawGroups();
-            goToStep(3);
-        }
-
-        function drawGroups() {
-            const players = [...tournamentData.players];
-            const groupSizes = tournamentData.division.groups;
-            const groupCount = groupSizes.length;
-
-            const seededPlayers = Object.values(tournamentData.seededPlayers).flat();
-            const unseededPlayers = players.filter(p => !seededPlayers.includes(p));
-
-            for (let i = unseededPlayers.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [unseededPlayers[i], unseededPlayers[j]] = [unseededPlayers[j], unseededPlayers[i]];
-            }
-
-            const groups = [];
-            let unseededIndex = 0;
-
-            for (let i = 0; i < groupCount; i++) {
-                const group = [];
-                if (tournamentData.seededPlayers[i]) {
-                    group.push(...tournamentData.seededPlayers[i]);
-                }
-                const neededPlayers = groupSizes[i] - group.length;
-                for (let j = 0; j < neededPlayers; j++) {
-                    if (unseededIndex < unseededPlayers.length) {
-                        group.push(unseededPlayers[unseededIndex++]);
-                    }
-                }
-                groups.push(group);
-            }
-
-            tournamentData.groups = groups;
-            generateMatchSchedules();
-            displayGroups();
-        }
-
-        function generateMatchSchedules() {
-            tournamentData.matchSchedules = [];
-            
-            tournamentData.groups.forEach((group, groupIndex) => {
-                const matches = generateRoundRobin(group, groupIndex + 1);
-                tournamentData.matchSchedules.push(matches);
-            });
-        }
-
-        function generateRoundRobin(players, groupNumber) {
-            const n = players.length;
-            const matches = [];
-            let matchCounter = 1;
-
-            if (n < 2) return matches;
-
-            let playersRotating = [...players];
-            
-            if (n % 2 !== 0) {
-                playersRotating.push(null);
-            }
-
-            const totalPlayers = playersRotating.length;
-            const numRounds = totalPlayers - 1;
-
-            for (let round = 0; round < numRounds; round++) {
-                for (let i = 0; i < totalPlayers / 2; i++) {
-                    const home = i;
-                    const away = totalPlayers - 1 - i;
-                    
-                    const player1 = playersRotating[home];
-                    const player2 = playersRotating[away];
-                    
-                    if (player1 && player2) {
-                        matches.push({
-                            number: `${groupNumber}.${matchCounter}`,
-                            player1: player1,
-                            player2: player2,
-                            round: round + 1
-                        });
-                        matchCounter++;
-                    }
-                }
-                
-                if (totalPlayers > 2) {
-                    const fixed = playersRotating[0];
-                    const last = playersRotating.pop();
-                    playersRotating.splice(1, 0, last);
-                    playersRotating[0] = fixed;
-                }
-            }
-
-            return matches;
-        }
-
-        function displayGroups() {
-            const container = document.getElementById('groupsPreview');
-            container.innerHTML = '';
-
-            tournamentData.groups.forEach((group, index) => {
-                const card = document.createElement('div');
-                card.className = 'group-card';
-                
-                const totalMatches = group.length * (group.length - 1) / 2;
-                
-                let html = `<h3>Skupina ${index + 1}</h3><ul>`;
-                group.forEach((player, pIndex) => {
-                    const isSeeded = tournamentData.seededPlayers[index] && 
-                                   tournamentData.seededPlayers[index].includes(player);
-                    const badge = isSeeded ? '<span class="seeded-badge">NASAZENÝ</span>' : '';
-                    html += `<li>${pIndex + 1}. ${player} ${badge}</li>`;
-                });
-                html += '</ul>';
-
-                html += `<div class="match-schedule">`;
-                html += `<h4>📋 ROZPIS ZÁPASŮ (${totalMatches} zápasů):</h4>`;
-                
-                const matches = tournamentData.matchSchedules[index];
-                matches.forEach(match => {
-                    html += `<div class="match-item">
-                        <span class="match-number">Zápas ${match.number}:</span>
-                        ${match.player1} vs ${match.player2}
-                    </div>`;
-                });
-                
-                html += `</div>`;
-                
-                card.innerHTML = html;
-                container.appendChild(card);
-            });
-        }
-
-        function redrawGroups() {
-            drawGroups();
-        }
-
-        function printSchedules() {
-            window.print();
-        }
-
-        function startResults() {
-            initializeResults();
-            goToStep(4);
-        }
-
-        function initializeResults() {
-            tournamentData.results = tournamentData.groups.map(group => {
-                const results = [];
-                for (let i = 0; i < group.length; i++) {
-                    const row = [];
-                    for (let j = 0; j < group.length; j++) {
-                        row.push({ score: '', won: 0, lost: 0 });
-                    }
-                    results.push(row);
-                }
-                return results;
-            });
-
-            displayResults();
-        }
-
-        function displayResults() {
-            const container = document.getElementById('resultsContainer');
-            container.innerHTML = '';
-
-            tournamentData.groups.forEach((group, groupIndex) => {
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'group-results';
-                
-                let html = `<h3>Skupina ${groupIndex + 1}</h3>`;
-                html += `<div class="results-table-wrapper">`;
-                html += `<table class="results-table">`;
-                
-                // Header
-                html += `<thead><tr>`;
-                html += `<th class="player-name"></th>`;
-                group.forEach((player, idx) => {
-                    const shortName = player.split(' ')[0];
-                    html += `<th>${shortName}</th>`;
-                });
-                html += `<th>Body</th><th>Skóre</th><th>Pořadí</th>`;
-                html += `</tr></thead>`;
-                
-                // Body - hráči v původním pořadí, aby X byla na úhlopříčce
-                html += `<tbody id="group-${groupIndex}-body">`;
-                const standings = calculateStandings(groupIndex);
-                
-                // Vytvoříme mapu pro rychlé hledání dat hráče
-                const standingsMap = {};
-                standings.forEach(playerData => {
-                    standingsMap[playerData.name] = playerData;
-                });
-                
-                group.forEach((playerName, playerIdx) => {
-                    const playerData = standingsMap[playerName];
-                    const isAdvancing = playerData.rank <= tournamentData.advancingCount;
-                    html += `<tr class="${isAdvancing ? 'advancing' : ''}">`;
-                    html += `<td class="player-name">${playerName}${isAdvancing ? '<span class="advancing-badge">POSTUPUJE</span>' : ''}</td>`;
-                    
-                    group.forEach((opponent, colIdx) => {
-                        if (playerIdx === colIdx) {
-                            html += `<td class="diagonal">X</td>`;
-                        } else {
-                            const result = tournamentData.results[groupIndex][playerIdx][colIdx];
-                            html += `<td><input type="text" class="score-input ${result.score ? 'filled' : ''}" 
-                                value="${result.score}" 
-                                placeholder="XX:YY"
-                                onchange="updateScore(${groupIndex}, ${playerIdx}, ${colIdx}, this.value)"></td>`;
-                        }
-                    });
-                    
-                    html += `<td><strong>${playerData.points}</strong></td>`;
-                    html += `<td>${playerData.scoreDiff >= 0 ? '+' : ''}${playerData.scoreDiff}</td>`;
-                    html += `<td><strong>${playerData.rank}.</strong></td>`;
-                    html += `</tr>`;
-                });
-                
-                html += `</tbody></table></div>`;
-                
-                groupDiv.innerHTML = html;
-                container.appendChild(groupDiv);
-            });
-        }
-
-        function updateScore(groupIndex, playerIdx, opponentIdx, scoreStr) {
-            scoreStr = scoreStr.trim();
-            
-            if (!scoreStr) {
-                tournamentData.results[groupIndex][playerIdx][opponentIdx] = { score: '', won: 0, lost: 0 };
-                tournamentData.results[groupIndex][opponentIdx][playerIdx] = { score: '', won: 0, lost: 0 };
-                displayResults();
-                return;
-            }
-
-            const parts = scoreStr.split(':');
-            if (parts.length !== 2) {
-                alert('Špatný formát! Použijte XX:YY (např. 21:13 nebo 2:1)');
-                displayResults();
-                return;
-            }
-
-            const won = parseInt(parts[0]);
-            const lost = parseInt(parts[1]);
-
-            if (isNaN(won) || isNaN(lost)) {
-                alert('Špatný formát! Použijte čísla (např. 21:13)');
-                displayResults();
-                return;
-            }
-
-            tournamentData.results[groupIndex][playerIdx][opponentIdx] = {
-                score: `${won}:${lost}`,
-                won: won,
-                lost: lost
-            };
-
-            tournamentData.results[groupIndex][opponentIdx][playerIdx] = {
-                score: `${lost}:${won}`,
-                won: lost,
-                lost: won
-            };
-
-            displayResults();
-        }
-
-        function calculateStandings(groupIndex) {
-            const group = tournamentData.groups[groupIndex];
-            const results = tournamentData.results[groupIndex];
-            
-            const standings = group.map((player, playerIdx) => {
-                let points = 0;
-                let totalWon = 0;
-                let totalLost = 0;
-                
-                for (let opponentIdx = 0; opponentIdx < group.length; opponentIdx++) {
-                    if (playerIdx !== opponentIdx) {
-                        const result = results[playerIdx][opponentIdx];
-                        if (result.score) {
-                            totalWon += result.won;
-                            totalLost += result.lost;
-                            if (result.won > result.lost) {
-                                points += 2;
-                            }
-                        }
-                    }
-                }
-                
-                return {
-                    name: player,
-                    playerIdx: playerIdx,
-                    points: points,
-                    scoreDiff: totalWon - totalLost,
-                    totalWon: totalWon,
-                    totalLost: totalLost
-                };
-            });
-
-            standings.sort((a, b) => {
-                if (a.points !== b.points) {
-                    return b.points - a.points;
-                }
-                
-                const headToHead = getHeadToHead(groupIndex, a.playerIdx, b.playerIdx);
-                if (headToHead !== 0) {
-                    return headToHead;
-                }
-                
-                if (a.scoreDiff !== b.scoreDiff) {
-                    return b.scoreDiff - a.scoreDiff;
-                }
-                
-                return a.name.localeCompare(b.name);
-            });
-
-            standings.forEach((player, idx) => {
-                player.rank = idx + 1;
-            });
-
-            return standings;
-        }
-
-        function getHeadToHead(groupIndex, playerIdx1, playerIdx2) {
-            const result = tournamentData.results[groupIndex][playerIdx1][playerIdx2];
-            if (!result.score) return 0;
-            
-            if (result.won > result.lost) return -1;
-            if (result.won < result.lost) return 1;
-            return 0;
-        }
-
-        function printResults() {
-            window.print();
-        }
-
-        function finishTournament() {
-            showFinalSummary();
-            goToStep(5);
-        }
-
-        function showFinalSummary() {
-            const container = document.getElementById('finalSummary');
-            let html = '';
-            
-            // NADPISY - samostatně
-            html += '<div class="ranking-header" style="text-align: center; margin: 20px 0;">';
-            html += `<h2 style="color: #667eea; margin-bottom: 10px; font-size: 2em;">🏆 ${tournamentData.name.toUpperCase()}</h2>`;
-            html += '<h3 style="color: #667eea; margin-bottom: 20px; font-size: 1.5em;">KONEČNÉ POŘADÍ</h3>';
-            html += '</div>';
-            
-            // TABULKA - samostatně
-            html += '<div class="ranking-table-container" style="background: white; padding: 30px; border-radius: 10px; margin: 20px 0; border: 3px solid #667eea;">';
-            
-            const ranking = getFinalRanking();
-            
-            html += '<table style="width: 100%; border-collapse: collapse; font-size: 1.1em;">';
-            html += '<thead><tr style="background: #667eea; color: white;">';
-            html += '<th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Pořadí</th>';
-            html += '<th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Jméno a příjmení</th>';
-            html += '</tr></thead>';
-            html += '<tbody>';
-            
-            ranking.forEach((player, index) => {
-                const position = index + 1;
-                let bgColor = 'white';
-                
-                // Zvýraznění top 3
-                if (position === 1) bgColor = '#ffd700'; // Zlatá
-                else if (position === 2) bgColor = '#c0c0c0'; // Stříbrná
-                else if (position === 3) bgColor = '#cd7f32'; // Bronzová
-                else if (index % 2 === 1) bgColor = '#f8f9fa'; // Střídavé řádky
-                
-                html += `<tr style="background: ${bgColor};">`;
-                html += `<td style="padding: 12px; border: 1px solid #ddd; font-weight: ${position <= 3 ? 'bold' : 'normal'}; font-size: ${position <= 3 ? '1.2em' : '1em'};">${position}.</td>`;
-                html += `<td style="padding: 12px; border: 1px solid #ddd; font-weight: ${position <= 3 ? 'bold' : 'normal'}; font-size: ${position <= 3 ? '1.2em' : '1em'};">${player.name}</td>`;
-                html += `</tr>`;
-            });
-            
-            html += '</tbody></table>';
-            html += '</div>'; // konec ranking-table-container
-            
-            // Detaily - skupinová fáze (volitelně zobrazit)
-            html += '<details style="margin: 20px 0;">';
-            html += '<summary style="cursor: pointer; padding: 15px; background: #f8f9fa; border-radius: 5px; font-weight: bold; color: #667eea;">📊 Zobrazit detaily skupinové fáze</summary>';
-            html += '<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">';
-            html += '<h4 style="color: #667eea; margin-bottom: 20px;">Skupinová fáze</h4>';
-            
-            tournamentData.groups.forEach((group, groupIndex) => {
-                html += `<div style="margin: 20px 0; padding: 15px; background: white; border-radius: 8px;">`;
-                html += `<h4 style="color: #667eea;">Skupina ${groupIndex + 1}</h4>`;
-                html += `<ol>`;
-                
-                const standings = calculateStandings(groupIndex);
-                standings.forEach(player => {
-                    const badge = player.rank <= tournamentData.advancingCount ? ' <strong style="color: #28a745;">✓ POSTUPUJE</strong>' : '';
-                    html += `<li>${player.name} - ${player.points} bodů, skóre ${player.scoreDiff >= 0 ? '+' : ''}${player.scoreDiff}${badge}</li>`;
-                });
-                
-                html += `</ol></div>`;
-            });
-            
-            html += '</div></details>';
-            
-            // Detaily - vyřazovací fáze (volitelně zobrazit)
-            if (tournamentData.playoff) {
-                html += '<details style="margin: 20px 0;">';
-                html += '<summary style="cursor: pointer; padding: 15px; background: #f8f9fa; border-radius: 5px; font-weight: bold; color: #667eea;">🏆 Zobrazit detaily vyřazovací fáze</summary>';
-                html += '<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">';
-                html += '<h4 style="color: #667eea;">Vyřazovací fáze</h4>';
-                
-                const rounds = tournamentData.playoff.rounds;
-                const finalMatch = rounds[rounds.length - 1][0];
-                
-                if (finalMatch.winner) {
-                    const winnerName = finalMatch.winner === 1 ? finalMatch.player1 : finalMatch.player2;
-                    const loserName = finalMatch.winner === 1 ? finalMatch.player2 : finalMatch.player1;
-                    html += `<div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">`;
-                    html += `<strong>Finále:</strong> ${winnerName} vs ${loserName} (${finalMatch.score1}:${finalMatch.score2})<br>`;
-                    html += `<span style="color: #28a745; font-weight: bold;">Vítěz: ${winnerName}</span>`;
-                    html += `</div>`;
-                }
-                
-                // Semifinále
-                if (rounds.length >= 2) {
-                    const semiFinal = rounds[rounds.length - 2];
-                    if (semiFinal.some(m => m.winner)) {
-                        html += `<div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">`;
-                        html += `<strong>Semifinále:</strong><br>`;
-                        semiFinal.forEach(match => {
-                            if (match.winner) {
-                                html += `${match.player1} vs ${match.player2} (${match.score1}:${match.score2})<br>`;
-                            }
-                        });
-                        html += `</div>`;
-                    }
-                }
-                
-                html += '</div></details>';
-            }
-            
-            container.innerHTML = html;
-        }
-
-        function saveResults() {
-            const data = JSON.stringify(tournamentData, null, 2);
-            const blob = new Blob([data], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `turnaj_${tournamentData.name.replace(/\s+/g, '_')}_vysledky.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            alert('✅ Výsledky uloženy!');
-        }
-
-        function loadTournament(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    tournamentData = JSON.parse(e.target.result);
-                    alert('✅ Turnaj načten!');
-                    
-                    document.getElementById('tournamentName').value = tournamentData.name;
-                    document.getElementById('playerCount').value = tournamentData.playerCount;
-                    document.getElementById('groupCount').value = tournamentData.groupCount;
-                    document.getElementById('advancingCount').value = tournamentData.advancingCount;
-                    
-                    // Kontrola, zda je turnaj dokončený (finále hotové)
-                    if (tournamentData.playoff && tournamentData.playoff.rounds) {
-                        const rounds = tournamentData.playoff.rounds;
-                        const finalMatch = rounds[rounds.length - 1][0];
-                        
-                        if (finalMatch.winner) {
-                            // Turnaj je dokončený - zobrazíme finální pořadí
-                            showFinalSummary();
-                            goToStep(5);
-                        } else {
-                            // Playoff probíhá - zobrazíme pavouk
-                            displayPlayoffBracket();
-                            goToStep('4_5');
-                        }
-                    } else if (tournamentData.results && tournamentData.results.length > 0) {
-                        // Probíhá skupinová fáze
-                        displayResults();
-                        goToStep(4);
-                    } else if (tournamentData.groups && tournamentData.groups.length > 0) {
-                        // Skupiny vylosovány, ale ještě nezačalo zadávání výsledků
-                        displayGroups();
-                        goToStep(3);
-                    } else {
-                        // Jenom základní nastavení
-                        goToStep(1);
-                    }
-                } catch (error) {
-                    alert('❌ Chyba při načítání!');
-                    console.error(error);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // ============================================
-        // VYŘAZOVACÍ PAVOUK
-        // ============================================
-
-        function startPlayoffs() {
-            // Vytvoříme seznam postupujících z každé skupiny
-            const advancingPlayers = [];
-            
-            tournamentData.groups.forEach((group, groupIndex) => {
-                const standings = calculateStandings(groupIndex);
-                const advancing = standings
-                    .filter(p => p.rank <= tournamentData.advancingCount)
-                    .map(p => ({
-                        name: p.name,
-                        group: groupIndex + 1,
-                        rank: p.rank
-                    }));
-                advancingPlayers.push(...advancing);
-            });
-
-            // Spárování a vytvoření pavouka
-            createPlayoffBracket(advancingPlayers);
-            
-            // Zobrazíme info o pavouku
-            const infoElement = document.getElementById('playoffInfo');
-            const totalPlayers = advancingPlayers.length;
-            const perGroup = tournamentData.advancingCount;
-            
-            let infoText = `Ze každé skupiny postupuje ${perGroup} ${perGroup === 1 ? 'hráč' : perGroup <= 4 ? 'hráči' : 'hráčů'}. `;
-            infoText += `Celkem ${totalPlayers} hráčů v pavouku. `;
-            infoText += `Hráči jsou nasazeni podle výsledků ve skupinách (1-${totalPlayers}). `;
-            
-            infoElement.innerHTML = infoText + '<br>';
-            
-            displayPlayoffBracket();
-            goToStep('4_5');
-        }
-
-        function createPlayoffBracket(players) {
-            // Seřadíme všechny postupující podle výkonnosti (body, skóre)
-            players.sort((a, b) => {
-                // Najdeme jejich výsledky ve skupinách
-                const standingsA = calculateStandings(a.group - 1);
-                const standingsB = calculateStandings(b.group - 1);
-                
-                const playerDataA = standingsA.find(p => p.name === a.name);
-                const playerDataB = standingsB.find(p => p.name === b.name);
-                
-                // Seřadíme podle: 1) pořadí ve skupině, 2) body, 3) skóre
-                if (a.rank !== b.rank) return a.rank - b.rank;
-                if (playerDataA.points !== playerDataB.points) return playerDataB.points - playerDataA.points;
-                return playerDataB.scoreDiff - playerDataA.scoreDiff;
-            });
-            
-            // Vytvoříme první kolo - klasické spárování: 1. vs poslední, 2. vs předposlední, atd.
-            const firstRound = [];
-            const totalPlayers = players.length;
-            
-            // Spárování pro první kolo
-            for (let i = 0; i < Math.floor(totalPlayers / 2); i++) {
-                const topPlayerIdx = i;
-                const bottomPlayerIdx = totalPlayers - 1 - i;
-                
-                firstRound.push({
-                    matchNumber: i + 1,
-                    player1: players[topPlayerIdx].name,
-                    player1Seed: topPlayerIdx + 1,
-                    player2: players[bottomPlayerIdx].name,
-                    player2Seed: bottomPlayerIdx + 1,
-                    score1: '',
-                    score2: '',
-                    winner: null
-                });
-            }
-
-            // Vytvoříme strukturu pro všechna kola
-            const rounds = [firstRound];
-            let currentRound = firstRound;
-            
-            // Generujeme další kola až do finále
-            while (currentRound.length > 1) {
-                const nextRound = [];
-                let matchesNeeded;
-                
-                if (currentRound.length % 2 === 1) {
-                    // Lichý počet zápasů - jeden postupuje přímo, ostatní hrají
-                    matchesNeeded = Math.floor(currentRound.length / 2) + 1;
-                } else {
-                    // Sudý počet zápasů
-                    matchesNeeded = currentRound.length / 2;
-                }
-                
-                for (let i = 0; i < matchesNeeded; i++) {
-                    nextRound.push({
-                        matchNumber: i + 1,
-                        player1: null,
-                        player2: null,
-                        score1: '',
-                        score2: '',
-                        winner: null,
-                        fromMatch1: i * 2,
-                        fromMatch2: i * 2 + 1
-                    });
-                }
-                
-                rounds.push(nextRound);
-                currentRound = nextRound;
-            }
-
-            tournamentData.playoff = { 
-                rounds: rounds,
-                totalPlayers: totalPlayers
-            };
-        }
-
-        function displayPlayoffBracket() {
-            const container = document.getElementById('playoffContainer');
-            const rounds = tournamentData.playoff.rounds;
-            const totalPlayers = tournamentData.playoff.totalPlayers;
-            
-            let html = '<div class="bracket">';
-            
-            rounds.forEach((round, roundIndex) => {
-                // Určíme název kola podle počtu hráčů
-                let roundName = '';
-                const playersInRound = round.length * 2; // Přibližný počet hráčů v tomto kole
-                
-                if (roundIndex === rounds.length - 1) {
-                    roundName = 'Finále';
-                } else if (roundIndex === rounds.length - 2) {
-                    roundName = 'Semifinále';
-                } else if (roundIndex === rounds.length - 3) {
-                    roundName = 'Čtvrtfinále';
-                } else if (roundIndex === 0) {
-                    // První kolo - pojmenujeme podle celkového počtu
-                    if (totalPlayers <= 8) {
-                        roundName = 'Čtvrtfinále';
-                    } else if (totalPlayers <= 16) {
-                        roundName = 'Osmifinále';
-                    } else if (totalPlayers <= 32) {
-                        roundName = 'Šestnáctifinále';
-                    } else {
-                        roundName = `První kolo (${totalPlayers} hráčů)`;
-                    }
-                } else {
-                    roundName = `Kolo ${roundIndex + 1}`;
-                }
-                
-                html += `<div class="bracket-round">`;
-                html += `<h3>${roundName}</h3>`;
-                
-                round.forEach((match, matchIndex) => {
-                    const isCompleted = match.winner !== null;
-                    
-                    html += `<div class="bracket-match ${isCompleted ? 'completed' : ''}">`;
-                    html += `<div class="bracket-match-number">Zápas ${match.matchNumber}</div>`;
-                    
-                    // Hráč 1
-                    const player1Name = match.player1 || 'TBD';
-                    const player1Class = match.player1 ? '' : 'tbd';
-                    const isPlayer1Winner = match.winner === 1;
-                    const isPlayer1Loser = match.winner === 2;
-                    const player1Seed = match.player1Seed ? ` [${match.player1Seed}]` : '';
-                    
-                    html += `<div class="match-player ${isPlayer1Winner ? 'winner' : ''} ${isPlayer1Loser ? 'loser' : ''}">`;
-                    html += `<span class="player-name-playoff ${player1Class}">${player1Name}${player1Seed}</span>`;
-                    if (match.player1 && match.score1) {
-                        html += `<span class="player-score">${match.score1}</span>`;
-                    } else if (match.player1) {
-                        html += `<input type="text" class="score-input-playoff" 
-                            value="${match.score1}" 
-                            placeholder="XX"
-                            onchange="updatePlayoffScore(${roundIndex}, ${matchIndex}, 1, this.value)">`;
-                    }
-                    html += `</div>`;
-                    
-                    html += `<div class="match-vs">vs</div>`;
-                    
-                    // Hráč 2
-                    const player2Name = match.player2 || 'TBD';
-                    const player2Class = match.player2 ? '' : 'tbd';
-                    const isPlayer2Winner = match.winner === 2;
-                    const isPlayer2Loser = match.winner === 1;
-                    const player2Seed = match.player2Seed ? ` [${match.player2Seed}]` : '';
-                    
-                    html += `<div class="match-player ${isPlayer2Winner ? 'winner' : ''} ${isPlayer2Loser ? 'loser' : ''}">`;
-                    html += `<span class="player-name-playoff ${player2Class}">${player2Name}${player2Seed}</span>`;
-                    if (match.player2 && match.score2) {
-                        html += `<span class="player-score">${match.score2}</span>`;
-                    } else if (match.player2) {
-                        html += `<input type="text" class="score-input-playoff" 
-                            value="${match.score2}" 
-                            placeholder="XX"
-                            onchange="updatePlayoffScore(${roundIndex}, ${matchIndex}, 2, this.value)">`;
-                    }
-                    html += `</div>`;
-                    
-                    html += `</div>`;
-                });
-                
-                html += `</div>`;
-            });
-            
-            html += '</div>';
-            
-            // Pokud je finále hotové, zobrazíme vítěze
-            const finalMatch = rounds[rounds.length - 1][0];
-            if (finalMatch.winner) {
-                const winnerName = finalMatch.winner === 1 ? finalMatch.player1 : finalMatch.player2;
-                html += `<div class="final-winner">`;
-                html += `<h3>🏆 VÍTĚZ TURNAJE 🏆</h3>`;
-                html += `<div class="winner-name">${winnerName}</div>`;
-                html += `</div>`;
-            }
-            
-            container.innerHTML = html;
-        }
-
-        function updatePlayoffScore(roundIndex, matchIndex, playerNum, scoreStr) {
-            const match = tournamentData.playoff.rounds[roundIndex][matchIndex];
-            scoreStr = scoreStr.trim();
-            
-            if (playerNum === 1) {
-                match.score1 = scoreStr;
-            } else {
-                match.score2 = scoreStr;
-            }
-            
-            // Pokud jsou oba skóre zadány, určíme vítěze
-            if (match.score1 && match.score2) {
-                const score1 = parseInt(match.score1);
-                const score2 = parseInt(match.score2);
-                
-                if (!isNaN(score1) && !isNaN(score2) && score1 !== score2) {
-                    if (score1 > score2) {
-                        match.winner = 1;
-                        advanceWinner(roundIndex, matchIndex, match.player1);
-                    } else if (score2 > score1) {
-                        match.winner = 2;
-                        advanceWinner(roundIndex, matchIndex, match.player2);
-                    }
-                } else if (score1 === score2) {
-                    alert('Skóre nesmí být stejné! Jeden hráč musí vyhrát.');
-                    if (playerNum === 1) {
-                        match.score1 = '';
-                    } else {
-                        match.score2 = '';
-                    }
-                }
-            }
-            
-            displayPlayoffBracket();
-        }
-
-        function advanceWinner(roundIndex, matchIndex, winnerName) {
-            // Pokud existuje další kolo
-            if (roundIndex + 1 < tournamentData.playoff.rounds.length) {
-                const currentRound = tournamentData.playoff.rounds[roundIndex];
-                const nextRound = tournamentData.playoff.rounds[roundIndex + 1];
-                const nextMatchIndex = Math.floor(matchIndex / 2);
-                
-                // Pokud je lichý počet zápasů a jsme na posledním zápase
-                if (currentRound.length % 2 === 1 && matchIndex === currentRound.length - 1) {
-                    // Poslední vítěz postupuje do posledního zápasu dalšího kola jako player1
-                    if (nextRound[nextRound.length - 1]) {
-                        nextRound[nextRound.length - 1].player1 = winnerName;
-                    }
-                } else {
-                    // Normální postup
-                    const nextMatch = nextRound[nextMatchIndex];
-                    
-                    // Určíme, zda vítěz postupuje jako player1 nebo player2
-                    if (matchIndex % 2 === 0) {
-                        nextMatch.player1 = winnerName;
-                    } else {
-                        nextMatch.player2 = winnerName;
-                    }
-                }
-            }
-        }
-
-        // ============================================
-        // SESTAVENÍ KONEČNÉHO POŘADÍ
-        // ============================================
-
-        function getFinalRanking() {
-            const ranking = [];
-            
-            // 1. Sestavíme pořadí z vyřazovací části
-            if (tournamentData.playoff && tournamentData.playoff.rounds) {
-                const rounds = tournamentData.playoff.rounds;
-                const playoffPlayers = new Set();
-                
-                // Procházíme kola od finále zpět
-                for (let roundIndex = rounds.length - 1; roundIndex >= 0; roundIndex--) {
-                    const round = rounds[roundIndex];
-                    const roundName = getRoundName(roundIndex, rounds.length);
-                    
-                    round.forEach((match, matchIndex) => {
-                        // Vítěz
-                        if (match.winner) {
-                            const winnerName = match.winner === 1 ? match.player1 : match.player2;
-                            const loserName = match.winner === 1 ? match.player2 : match.player1;
-                            
-                            playoffPlayers.add(winnerName);
-                            if (loserName) playoffPlayers.add(loserName);
-                            
-                            // Poražený z tohoto zápasu
-                            if (loserName && !ranking.find(r => r.name === loserName)) {
-                                ranking.push({
-                                    name: loserName,
-                                    roundEliminated: roundName,
-                                    roundIndex: roundIndex
-                                });
-                            }
-                        }
-                    });
-                }
-                
-                // Vítěz turnaje
-                const finalMatch = rounds[rounds.length - 1][0];
-                if (finalMatch.winner) {
-                    const winnerName = finalMatch.winner === 1 ? finalMatch.player1 : finalMatch.player2;
-                    ranking.unshift({
-                        name: winnerName,
-                        roundEliminated: 'Vítěz',
-                        roundIndex: rounds.length
-                    });
-                }
-            }
-            
-            // 2. Přidáme hráče, kteří nevypadli ve vyřazovací části (ze skupin)
-            const allPlayers = [];
-            tournamentData.groups.forEach((group, groupIndex) => {
-                const standings = calculateStandings(groupIndex);
-                standings.forEach(playerData => {
-                    // Pokud tento hráč není v pavouku, přidáme ho
-                    if (!ranking.find(r => r.name === playerData.name)) {
-                        allPlayers.push({
-                            name: playerData.name,
-                            group: groupIndex + 1,
-                            rank: playerData.rank,
-                            points: playerData.points,
-                            scoreDiff: playerData.scoreDiff,
-                            advanced: playerData.rank <= tournamentData.advancingCount
-                        });
-                    }
-                });
-            });
-            
-            // Seřadíme hráče ze skupin
-            allPlayers.sort((a, b) => {
-                // Nejprve ti co postoupili (podle pořadí)
-                if (a.advanced !== b.advanced) return b.advanced - a.advanced;
-                if (a.rank !== b.rank) return a.rank - b.rank;
-                if (a.points !== b.points) return b.points - a.points;
-                if (a.scoreDiff !== b.scoreDiff) return b.scoreDiff - a.scoreDiff;
-                return a.name.localeCompare(b.name);
-            });
-            
-            // Přidáme je na konec rankingu
-            allPlayers.forEach(p => {
-                const eliminated = p.advanced ? 'Vyřazovací část' : `Skupina ${p.group}`;
-                ranking.push({
-                    name: p.name,
-                    roundEliminated: eliminated,
-                    group: p.group,
-                    groupRank: p.rank
-                });
-            });
-            
-            return ranking;
-        }
-
-        function getRoundName(roundIndex, totalRounds) {
-            if (roundIndex === totalRounds - 1) return 'Finále';
-            if (roundIndex === totalRounds - 2) return 'Semifinále';
-            if (roundIndex === totalRounds - 3) return 'Čtvrtfinále';
-            if (roundIndex === totalRounds - 4) return 'Osmifinále';
-            return `Kolo ${roundIndex + 1}`;
-        }
-
-        function printFinalRanking() {
-            // Skryjeme detaily před tiskem
-            const details = document.querySelectorAll('details');
-            const detailsWereOpen = [];
-            details.forEach((detail, index) => {
-                detailsWereOpen[index] = detail.open;
-                detail.open = false;
-            });
-            
-            // Přidáme třídu pro tisk jen pořadí
-            document.body.classList.add('print-ranking-only');
-            
-            window.print();
-            
-            // Obnovíme stav detailů
-            details.forEach((detail, index) => {
-                detail.open = detailsWereOpen[index];
-            });
-            
-            document.body.classList.remove('print-ranking-only');
-        }
-
-        // ============================================
-        // GENEROVÁNÍ ZAMRZLÉ (READ-ONLY) VERZE PRO ZVEŘEJNĚNÍ
-        // ============================================
-
-        function generatePublicVersion() {
-            // Vytvoříme kompletní HTML pro zveřejnění
-            const publicHTML = generatePublicHTML();
-            
-            // Stáhneme jako soubor
-            const blob = new Blob([publicHTML], { type: 'text/html;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            const safeName = tournamentData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            a.download = `${safeName}_vysledky_public.html`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            alert('✅ Veřejná verze vygenerována!\n\nSoubor můžete nahrát na webhosting a výsledky budou dostupné online pro všechny účastníky.');
-        }
-
-        function generatePublicHTML() {
-            const ranking = getFinalRanking();
-            
-            let html = `<!DOCTYPE html>
-<html lang="cs">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${tournamentData.name} - Výsledky</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .header p { font-size: 1.1em; opacity: 0.9; }
-        .content { padding: 40px 30px; }
-        
-        .section {
-            margin: 30px 0;
-            padding: 30px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .section h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
-        }
-        
-        /* Konečné pořadí */
-        .final-ranking {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            border: 3px solid #667eea;
-        }
-        
-        .ranking-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        .ranking-table th {
-            background: #667eea;
-            color: white;
-            padding: 15px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-        
-        .ranking-table td {
-            padding: 12px;
-            border: 1px solid #ddd;
-        }
-        
-        .ranking-table tr:nth-child(even) { background: #f8f9fa; }
-        .ranking-table tr:nth-child(1) td { background: #ffd700; font-weight: bold; font-size: 1.2em; }
-        .ranking-table tr:nth-child(2) td { background: #c0c0c0; font-weight: bold; font-size: 1.1em; }
-        .ranking-table tr:nth-child(3) td { background: #cd7f32; font-weight: bold; font-size: 1.1em; }
-        
-        /* Skupiny */
         .groups-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 20px;
-            margin-top: 20px;
+            margin: 20px 0;
         }
         
-        .group-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-        }
-        
-        .group-card h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
-        
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85em;
-            margin-top: 10px;
-        }
-        
-        .results-table th,
-        .results-table td {
-            padding: 8px;
-            text-align: center;
-            border: 1px solid #dee2e6;
-        }
-        
-        .results-table th { background: #667eea; color: white; }
-        .results-table .player-name { text-align: left; font-weight: bold; }
-        .results-table .diagonal { background: #e9ecef; }
-        .results-table .advancing { background: #d4edda; }
-        .advancing-badge {
-            background: #28a745;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 0.75em;
-            margin-left: 5px;
-        }
-        
-        /* Pavouk */
         .bracket {
             display: flex;
             gap: 40px;
-            padding: 20px;
             overflow-x: auto;
-            min-width: fit-content;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
         
         .bracket-round {
@@ -2438,6 +512,1392 @@
             .content { padding: 20px 15px; }
             .bracket { min-width: 800px; }
             .groups-grid { grid-template-columns: 1fr; }
+            .choice-cards { grid-template-columns: 1fr; }
+        }
+        
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; }
+            .bracket, .results-table { page-break-inside: avoid; }
+            .button-group, .btn { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏓 Organizátor turnajů stolního tenisu</h1>
+            <p>Vytvořte a spravujte turnaj s možností ukládání</p>
+            <div class="version">Verze 1.5 - S ukládáním turnaje</div>
+        </div>
+        
+        <div class="content">
+            <!-- Úvodní obrazovka -->
+            <div id="welcomeScreen" class="step active">
+                <div class="welcome-screen">
+                    <h2 class="welcome-title">Vítejte v organizátoru turnajů</h2>
+                    <p class="welcome-subtitle">Vyberte si, zda chcete založit nový turnaj nebo pokračovat v existujícím</p>
+                    
+                    <div class="choice-cards">
+                        <div class="choice-card" onclick="startNewTournament()">
+                            <div class="choice-card-icon">🆕</div>
+                            <h3 class="choice-card-title">Nový turnaj</h3>
+                            <p class="choice-card-desc">Vytvořte nový turnaj od začátku s vlastním nastavením</p>
+                        </div>
+                        
+                        <div class="choice-card" id="continueCard" onclick="continueTournament()" style="display: none;">
+                            <div class="choice-card-icon">▶️</div>
+                            <h3 class="choice-card-title">Pokračovat v turnaji</h3>
+                            <p class="choice-card-desc">Načtěte uložený rozpracovaný turnaj z prohlížeče</p>
+                            <div id="savedTournamentInfo" class="saved-tournament-info" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="choice-card" onclick="document.getElementById('importFile').click()">
+                            <div class="choice-card-icon">📂</div>
+                            <h3 class="choice-card-title">Načíst ze zálohy</h3>
+                            <p class="choice-card-desc">Importujte turnaj z dříve uloženého JSON souboru</p>
+                            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importTournament(event)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Krok 1: Základní nastavení -->
+            <div id="step1" class="step">
+                <h2 class="step-title">Krok 1: Základní nastavení</h2>
+                
+                <div class="form-group">
+                    <label for="tournamentName">📋 Název turnaje:</label>
+                    <input type="text" id="tournamentName" placeholder="např. Vánoční turnaj 2024" value="Turnaj stolního tenisu">
+                </div>
+                
+                <div class="form-group">
+                    <label for="date">📅 Datum:</label>
+                    <input type="date" id="date">
+                </div>
+                
+                <div class="form-group">
+                    <label for="location">📍 Místo konání:</label>
+                    <input type="text" id="location" placeholder="např. Sportovní hala Přerov">
+                </div>
+                
+                <div class="form-group">
+                    <label for="organizer">👤 Organizátor:</label>
+                    <input type="text" id="organizer" placeholder="Vaše jméno nebo název klubu">
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="goToStep(2)">Pokračovat ➜</button>
+                </div>
+            </div>
+            
+            <!-- Krok 2: Hráči -->
+            <div id="step2" class="step">
+                <h2 class="step-title">Krok 2: Seznam hráčů</h2>
+                
+                <div class="form-group">
+                    <label for="playersInput">👥 Vložte seznam hráčů (jeden hráč na řádek):</label>
+                    <textarea id="playersInput" placeholder="Jan Novák
+Petr Svoboda
+Marie Nováková
+..."></textarea>
+                </div>
+                
+                <div class="info-box">
+                    <strong>💡 Tip:</strong>
+                    Zkopírujte seznam hráčů z Excelu nebo jiné tabulky. Každý hráč na samostatném řádku.
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="goToStep(1)">⬅ Zpět</button>
+                    <button class="btn btn-primary" onclick="processPlayers()">Pokračovat ➜</button>
+                </div>
+            </div>
+            
+            <!-- Krok 3: Nasazení -->
+            <div id="step3" class="step">
+                <h2 class="step-title">Krok 3: Nasazení hráčů</h2>
+                
+                <div class="info-box">
+                    <strong>ℹ️ Co je nasazení?</strong>
+                    Nasazení určuje, kteří hráči jsou nejsilnější a mají být rozmístěni do různých skupin, aby se nepotkali už ve skupinové fázi.
+                </div>
+                
+                <div class="form-group">
+                    <label for="seededCount">🏆 Počet nasazených hráčů:</label>
+                    <select id="seededCount" onchange="showSeededPlayers()">
+                        <option value="0">Žádné nasazení (losování zcela náhodné)</option>
+                        <option value="2">2 nasazení (pro 2 skupiny)</option>
+                        <option value="4" selected>4 nasazení (pro 4 skupiny)</option>
+                        <option value="8">8 nasazení (pro 8 skupin)</option>
+                    </select>
+                </div>
+                
+                <div id="seededPlayersContainer"></div>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="goToStep(2)">⬅ Zpět</button>
+                    <button class="btn btn-primary" onclick="goToStep(4)">Pokračovat ➜</button>
+                </div>
+            </div>
+            
+            <!-- Krok 4: Volba varianty -->
+            <div id="step4" class="step">
+                <h2 class="step-title">Krok 4: Volba varianty turnaje</h2>
+                
+                <div id="variantsContainer"></div>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="goToStep(3)">⬅ Zpět</button>
+                    <button class="btn btn-primary" onclick="confirmVariant()">Pokračovat ➜</button>
+                </div>
+            </div>
+            
+            <!-- Krok 5: Rozlosování -->
+            <div id="step5" class="step">
+                <h2 class="step-title">Krok 5: Rozlosování do skupin</h2>
+                
+                <div class="info-box">
+                    <strong>🎲 Rozlosování proběhlo úspěšně!</strong>
+                    <div class="player-count" id="totalPlayers"></div>
+                </div>
+                
+                <div id="groupsContainer" class="groups-preview"></div>
+                
+                <div class="success-box">
+                    <strong>💾 Uložte si turnaj!</strong>
+                    <p>Turnaj byl automaticky uložen v prohlížeči. Můžete jej kdykoliv zavřít a později v něm pokračovat.</p>
+                    <p style="margin-top: 10px;"><strong>Tip:</strong> Pro přenos mezi zařízeními použijte tlačítko "Vytvořit zálohu" - stáhne se JSON soubor, který můžete načíst pomocí "Načíst ze zálohy" na jiném zařízení nebo v jiném prohlížeči.</p>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-warning" onclick="goToStep(4)">⬅ Zpět na varianty</button>
+                    <button class="btn btn-success" onclick="saveTournamentBackup()">💾 Vytvořit zálohu</button>
+                    <button class="btn btn-primary" onclick="startGroupStage()">Začít skupinovou fázi ➜</button>
+                </div>
+            </div>
+            
+            <!-- Krok 6: Skupinová fáze -->
+            <div id="step6" class="step">
+                <h2 class="step-title">Skupinová fáze - Zadávání výsledků</h2>
+                
+                <div class="info-box">
+                    <strong>📝 Zadávání výsledků:</strong>
+                    Zadávejte výsledky ve formátu "3:1", "3:2" apod. Klikněte na "Uložit výsledek" pro potvrzení.
+                </div>
+                
+                <div id="groupStageContainer"></div>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="goToStep(5)">⬅ Zpět</button>
+                    <button class="btn btn-success" onclick="saveTournamentBackup()">💾 Uložit průběžný stav</button>
+                    <button class="btn btn-primary" onclick="finishGroupStage()">Dokončit skupinovou fázi ➜</button>
+                </div>
+            </div>
+            
+            <!-- Krok 7: Vyřazovací pavouk -->
+            <div id="step7" class="step">
+                <h2 class="step-title">Vyřazovací část</h2>
+                
+                <div class="info-box">
+                    <strong>🏆 Vyřazovací pavouk</strong>
+                    Hráči postupují ze skupin podle umístění. Zadávejte výsledky vyřazovacích zápasů.
+                </div>
+                
+                <div id="playoffContainer"></div>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="goToStep(6)">⬅ Zpět</button>
+                    <button class="btn btn-success" onclick="saveTournamentBackup()">💾 Uložit průběžný stav</button>
+                    <button class="btn btn-primary" onclick="generateFinalResults()">Vygenerovat výsledky ➜</button>
+                </div>
+            </div>
+            
+            <!-- Krok 8: Finální výsledky -->
+            <div id="step8" class="step">
+                <h2 class="step-title">🎉 Turnaj dokončen!</h2>
+                
+                <div class="success-box">
+                    <strong>✅ Gratulujeme!</strong>
+                    Turnaj byl úspěšně dokončen. Můžete si stáhnout HTML se všemi výsledky.
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="downloadResults()">📥 Stáhnout výsledky (HTML)</button>
+                    <button class="btn btn-warning" onclick="clearTournamentData()">🗑️ Smazat uložený turnaj</button>
+                    <button class="btn btn-primary" onclick="location.reload()">🔄 Nový turnaj</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentStep = 0;
+        let tournamentData = {
+            name: '',
+            date: '',
+            location: '',
+            organizer: '',
+            players: [],
+            seededPlayers: [],
+            seededCount: 4,
+            groups: [],
+            groupSize: 0,
+            advancingCount: 0,
+            results: [],
+            playoff: null,
+            finalRanking: []
+        };
+        
+        const STORAGE_KEY = 'tournament_save';
+        
+        // Inicializace při načtení stránky
+        window.onload = function() {
+            checkSavedTournament();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+        };
+        
+        // Kontrola uloženého turnaje
+        function checkSavedTournament() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    document.getElementById('continueCard').style.display = 'block';
+                    
+                    // Zobrazit info o uloženém turnaji
+                    const infoDiv = document.getElementById('savedTournamentInfo');
+                    infoDiv.style.display = 'block';
+                    infoDiv.innerHTML = `
+                        <h4>📋 ${data.name || 'Neuložený název'}</h4>
+                        <p><strong>Datum:</strong> ${data.date || 'Nenastaveno'}</p>
+                        <p><strong>Hráčů:</strong> ${data.players.length}</p>
+                        <p><strong>Skupin:</strong> ${data.groups.length}</p>
+                    `;
+                } catch (e) {
+                    console.error('Chyba při načítání uloženého turnaje:', e);
+                }
+            }
+        }
+        
+        // Začít nový turnaj
+        function startNewTournament() {
+            if (localStorage.getItem(STORAGE_KEY)) {
+                if (!confirm('Máte uložený rozpracovaný turnaj. Chcete ho smazat a začít nový?')) {
+                    return;
+                }
+                localStorage.removeItem(STORAGE_KEY);
+            }
+            goToStep(1);
+        }
+        
+        // Pokračovat v turnaji
+        function continueTournament() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) {
+                alert('Nebyl nalezen žádný uložený turnaj.');
+                return;
+            }
+            
+            try {
+                tournamentData = JSON.parse(saved);
+                
+                // Určit, na kterém kroku se turnaj nachází
+                if (tournamentData.finalRanking && tournamentData.finalRanking.length > 0) {
+                    goToStep(8);
+                } else if (tournamentData.playoff && tournamentData.playoff.rounds) {
+                    goToStep(7);
+                    renderPlayoff();
+                } else if (tournamentData.results && tournamentData.results.length > 0) {
+                    goToStep(6);
+                    renderGroupStage();
+                } else if (tournamentData.groups && tournamentData.groups.length > 0) {
+                    goToStep(5);
+                    showGroupsDraw();
+                } else {
+                    goToStep(1);
+                }
+                
+                alert('Turnaj byl úspěšně načten!');
+            } catch (e) {
+                console.error('Chyba při načítání turnaje:', e);
+                alert('Nepodařilo se načíst uložený turnaj. Soubor může být poškozen.');
+            }
+        }
+        
+        // Import turnaje ze souboru
+        function importTournament(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Validace dat
+                    if (!data.name || !data.players || !Array.isArray(data.players)) {
+                        alert('Neplatný formát souboru. Soubor neobsahuje platná data turnaje.');
+                        return;
+                    }
+                    
+                    // Načtení dat
+                    tournamentData = data;
+                    saveTournament(); // Uložit i do localStorage
+                    
+                    // Určit, na kterém kroku se turnaj nachází
+                    if (tournamentData.finalRanking && tournamentData.finalRanking.length > 0) {
+                        goToStep(8);
+                    } else if (tournamentData.playoff && tournamentData.playoff.rounds) {
+                        goToStep(7);
+                        renderPlayoff();
+                    } else if (tournamentData.results && tournamentData.results.length > 0) {
+                        goToStep(6);
+                        renderGroupStage();
+                    } else if (tournamentData.groups && tournamentData.groups.length > 0) {
+                        goToStep(5);
+                        showGroupsDraw();
+                    } else {
+                        goToStep(1);
+                    }
+                    
+                    alert('Turnaj byl úspěšně importován ze zálohy!');
+                } catch (e) {
+                    console.error('Chyba při importu:', e);
+                    alert('Nepodařilo se načíst soubor. Ujistěte se, že je to platný JSON soubor se zálohou turnaje.');
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset input, aby šlo načíst stejný soubor znovu
+            event.target.value = '';
+        }
+        
+        // Uložit turnaj
+        function saveTournament() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(tournamentData));
+                console.log('Turnaj uložen');
+            } catch (e) {
+                console.error('Chyba při ukládání:', e);
+            }
+        }
+        
+        // Vytvořit zálohu (stáhnout JSON)
+        function saveTournamentBackup() {
+            const dataStr = JSON.stringify(tournamentData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `turnaj_zaloha_${tournamentData.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            alert('Záloha turnaje byla stažena jako JSON soubor. Tento soubor si uschovejte pro případ potřeby.');
+        }
+        
+        // Smazat uložený turnaj
+        function clearTournamentData() {
+            if (confirm('Opravdu chcete smazat všechna uložená data turnaje?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                alert('Data turnaje byla smazána.');
+                location.reload();
+            }
+        }
+        
+        function goToStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            
+            // Skrýt úvodní obrazovku
+            document.getElementById('welcomeScreen').classList.remove('active');
+            
+            if (step === 1) {
+                document.getElementById('step1').classList.add('active');
+            } else if (step === 2) {
+                tournamentData.name = document.getElementById('tournamentName').value;
+                tournamentData.date = document.getElementById('date').value;
+                tournamentData.location = document.getElementById('location').value;
+                tournamentData.organizer = document.getElementById('organizer').value;
+                document.getElementById('step2').classList.add('active');
+            } else if (step === 3) {
+                document.getElementById('step3').classList.add('active');
+            } else if (step === 4) {
+                document.getElementById('step4').classList.add('active');
+            } else if (step === 5) {
+                document.getElementById('step5').classList.add('active');
+            } else if (step === 6) {
+                document.getElementById('step6').classList.add('active');
+            } else if (step === 7) {
+                document.getElementById('step7').classList.add('active');
+            } else if (step === 8) {
+                document.getElementById('step8').classList.add('active');
+            }
+            
+            currentStep = step;
+            window.scrollTo(0, 0);
+        }
+        
+        function processPlayers() {
+            const input = document.getElementById('playersInput').value.trim();
+            if (!input) {
+                alert('Prosím vložte seznam hráčů.');
+                return;
+            }
+            
+            const players = input.split('\n')
+                .map(p => p.trim())
+                .filter(p => p.length > 0);
+            
+            if (players.length < 4) {
+                alert('Musíte zadat alespoň 4 hráče.');
+                return;
+            }
+            
+            tournamentData.players = players;
+            saveTournament();
+            goToStep(3);
+            showSeededPlayers();
+        }
+        
+        function showSeededPlayers() {
+            const count = parseInt(document.getElementById('seededCount').value);
+            tournamentData.seededCount = count;
+            
+            const container = document.getElementById('seededPlayersContainer');
+            
+            if (count === 0) {
+                container.innerHTML = '<div class="info-box">✓ Nebude použito žádné nasazení. Všichni hráči budou rozlosováni náhodně.</div>';
+                tournamentData.seededPlayers = [];
+                return;
+            }
+            
+            let html = `<div class="form-group">
+                <label>🏆 Vyberte ${count} nasazených hráčů (v pořadí od nejlepšího):</label>
+            `;
+            
+            for (let i = 0; i < count; i++) {
+                html += `
+                    <div style="margin: 10px 0;">
+                        <label>${i + 1}. nasazený:</label>
+                        <select id="seeded${i}" style="width: 100%; padding: 10px; margin-top: 5px;">
+                            <option value="">-- Vyberte hráče --</option>
+                            ${tournamentData.players.map(p => `<option value="${p}">${p}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function goToStep(step) {
+            if (step === 4) {
+                // Uložit nasazené hráče
+                const count = tournamentData.seededCount;
+                if (count > 0) {
+                    const seeded = [];
+                    for (let i = 0; i < count; i++) {
+                        const player = document.getElementById(`seeded${i}`).value;
+                        if (!player) {
+                            alert(`Prosím vyberte ${i + 1}. nasazeného hráče.`);
+                            return;
+                        }
+                        if (seeded.includes(player)) {
+                            alert(`Hráč ${player} je vybrán vícekrát. Každý hráč může být nasazen pouze jednou.`);
+                            return;
+                        }
+                        seeded.push(player);
+                    }
+                    tournamentData.seededPlayers = seeded;
+                }
+                
+                showVariants();
+            }
+            
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('welcomeScreen').classList.remove('active');
+            document.getElementById(`step${step}`).classList.add('active');
+            currentStep = step;
+            saveTournament();
+            window.scrollTo(0, 0);
+        }
+        
+        function showVariants() {
+            const playerCount = tournamentData.players.length;
+            const variants = generateVariants(playerCount);
+            
+            const container = document.getElementById('variantsContainer');
+            let html = '<div class="info-box"><strong>Vyberte variantu turnaje:</strong> Klikněte na kartu pro výběr varianty.</div>';
+            
+            variants.forEach((variant, index) => {
+                html += `
+                    <div class="variant-option" onclick="selectVariant(${index})">
+                        <h4>Varianta ${index + 1}: ${variant.groups} skupin × ${variant.size} hráčů</h4>
+                        <p>Postupuje ${variant.advancing} ${variant.advancing === 1 ? 'hráč' : variant.advancing < 5 ? 'hráči' : 'hráčů'} ze skupiny</p>
+                        <div class="variant-preview">
+                            ${Array(variant.groups).fill(0).map((_, i) => 
+                                `<div class="group-bar">Skupina ${i + 1}</div>`
+                            ).join('')}
+                        </div>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                            Celkem ${variant.playoff} ${variant.playoff === 1 ? 'hráč' : variant.playoff < 5 ? 'hráči' : 'hráčů'} v play-off
+                        </p>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function generateVariants(playerCount) {
+            const variants = [];
+            
+            // Možné velikosti skupin
+            for (let groupSize = 3; groupSize <= 6; groupSize++) {
+                const groupCount = Math.floor(playerCount / groupSize);
+                
+                if (groupCount < 2) continue;
+                
+                // Možné počty postupujících
+                for (let advancing = 1; advancing <= groupSize - 1; advancing++) {
+                    const playoffCount = groupCount * advancing;
+                    
+                    // Kontrola, zda je play-off vhodné (mocnina 2)
+                    if (isPowerOfTwo(playoffCount) || playoffCount === 0) {
+                        variants.push({
+                            groups: groupCount,
+                            size: groupSize,
+                            advancing: advancing,
+                            playoff: playoffCount
+                        });
+                    }
+                }
+            }
+            
+            // Seřadit podle celkového počtu hráčů v turnaji (sestupně)
+            variants.sort((a, b) => (b.groups * b.size) - (a.groups * a.size));
+            
+            return variants.slice(0, 6); // Max 6 variant
+        }
+        
+        function isPowerOfTwo(n) {
+            return n > 0 && (n & (n - 1)) === 0;
+        }
+        
+        let selectedVariantIndex = null;
+        
+        function selectVariant(index) {
+            document.querySelectorAll('.variant-option').forEach((el, i) => {
+                if (i === index) {
+                    el.classList.add('selected');
+                } else {
+                    el.classList.remove('selected');
+                }
+            });
+            selectedVariantIndex = index;
+        }
+        
+        function confirmVariant() {
+            if (selectedVariantIndex === null) {
+                alert('Prosím vyberte variantu turnaje.');
+                return;
+            }
+            
+            const variants = generateVariants(tournamentData.players.length);
+            const variant = variants[selectedVariantIndex];
+            
+            tournamentData.groupCount = variant.groups;
+            tournamentData.groupSize = variant.size;
+            tournamentData.advancingCount = variant.advancing;
+            
+            drawGroups();
+            saveTournament();
+            goToStep(5);
+        }
+        
+        function drawGroups() {
+            const players = [...tournamentData.players];
+            const groupCount = tournamentData.groupCount;
+            const groupSize = tournamentData.groupSize;
+            const seeded = tournamentData.seededPlayers;
+            
+            // Inicializace skupin
+            const groups = Array(groupCount).fill(0).map(() => []);
+            
+            // Rozlosování nasazených hráčů
+            if (seeded.length > 0) {
+                seeded.forEach((player, index) => {
+                    const groupIndex = index % groupCount;
+                    groups[groupIndex].push(player);
+                    const playerIndex = players.indexOf(player);
+                    if (playerIndex > -1) {
+                        players.splice(playerIndex, 1);
+                    }
+                });
+            }
+            
+            // Náhodné rozlosování zbylých hráčů
+            shuffleArray(players);
+            
+            let groupIndex = seeded.length > 0 ? Math.floor(seeded.length / groupCount) : 0;
+            let currentGroup = 0;
+            
+            players.forEach(player => {
+                while (groups[currentGroup].length >= groupSize) {
+                    currentGroup = (currentGroup + 1) % groupCount;
+                }
+                groups[currentGroup].push(player);
+                currentGroup = (currentGroup + 1) % groupCount;
+            });
+            
+            tournamentData.groups = groups;
+            
+            // Inicializace výsledkové tabulky
+            tournamentData.results = groups.map(group => {
+                return group.map(() => group.map(() => ({score: '', points: 0})));
+            });
+            
+            saveTournament();
+            showGroupsDraw();
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function showGroupsDraw() {
+            document.getElementById('totalPlayers').textContent = 
+                `${tournamentData.players.length} hráčů v ${tournamentData.groups.length} skupinách`;
+            
+            const container = document.getElementById('groupsContainer');
+            let html = '';
+            
+            tournamentData.groups.forEach((group, index) => {
+                html += `
+                    <div class="group-card">
+                        <h3>Skupina ${index + 1}</h3>
+                        <ul>
+                            ${group.map(player => {
+                                const isSeeded = tournamentData.seededPlayers.includes(player);
+                                return `<li>${player}${isSeeded ? '<span class="seeded-badge">NASAZENÝ</span>' : ''}</li>`;
+                            }).join('')}
+                        </ul>
+                        ${generateMatchSchedule(group, index)}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function generateMatchSchedule(group, groupIndex) {
+            let html = '<div class="match-schedule"><h4>🎯 Rozpis zápasů:</h4>';
+            let matchNumber = 1;
+            
+            for (let i = 0; i < group.length; i++) {
+                for (let j = i + 1; j < group.length; j++) {
+                    html += `
+                        <div class="match-item">
+                            <span class="match-number">${matchNumber}.</span>
+                            ${group[i]} vs ${group[j]}
+                        </div>
+                    `;
+                    matchNumber++;
+                }
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        function startGroupStage() {
+            goToStep(6);
+            renderGroupStage();
+        }
+        
+        function renderGroupStage() {
+            const container = document.getElementById('groupStageContainer');
+            let html = '<div class="groups-grid">';
+            
+            tournamentData.groups.forEach((group, groupIndex) => {
+                html += `
+                    <div class="group-card">
+                        <h3>Skupina ${groupIndex + 1}</h3>
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Zápas</th>
+                                    <th>Výsledek</th>
+                                    <th>Akce</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                for (let i = 0; i < group.length; i++) {
+                    for (let j = i + 1; j < group.length; j++) {
+                        const result = tournamentData.results[groupIndex][i][j];
+                        html += `
+                            <tr>
+                                <td>${group[i]} vs ${group[j]}</td>
+                                <td>
+                                    <input type="text" 
+                                           class="score-input" 
+                                           id="score_${groupIndex}_${i}_${j}"
+                                           value="${result.score || ''}"
+                                           placeholder="3:1">
+                                </td>
+                                <td>
+                                    <button class="btn btn-success" 
+                                            style="padding: 8px 15px; font-size: 0.9em;"
+                                            onclick="saveScore(${groupIndex}, ${i}, ${j})">
+                                        Uložit
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                }
+                
+                html += `
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-info" onclick="showStandings(${groupIndex})">
+                                Zobrazit průběžné pořadí
+                            </button>
+                        </div>
+                        <div id="standings_${groupIndex}" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function saveScore(groupIndex, player1, player2) {
+            const scoreInput = document.getElementById(`score_${groupIndex}_${player1}_${player2}`);
+            const score = scoreInput.value.trim();
+            
+            if (!score) {
+                alert('Zadejte výsledek zápasu.');
+                return;
+            }
+            
+            // Validace formátu
+            const parts = score.split(':');
+            if (parts.length !== 2) {
+                alert('Neplatný formát. Použijte formát "3:1", "3:0" apod.');
+                return;
+            }
+            
+            const score1 = parseInt(parts[0]);
+            const score2 = parseInt(parts[1]);
+            
+            if (isNaN(score1) || isNaN(score2)) {
+                alert('Skóre musí být čísla.');
+                return;
+            }
+            
+            // Uložení výsledku
+            tournamentData.results[groupIndex][player1][player2] = {
+                score: score,
+                score1: score1,
+                score2: score2
+            };
+            
+            // Zrcadlový zápis
+            tournamentData.results[groupIndex][player2][player1] = {
+                score: `${score2}:${score1}`,
+                score1: score2,
+                score2: score1
+            };
+            
+            saveTournament();
+            alert('Výsledek byl uložen.');
+            showStandings(groupIndex);
+        }
+        
+        function showStandings(groupIndex) {
+            const standings = calculateStandings(groupIndex);
+            const container = document.getElementById(`standings_${groupIndex}`);
+            
+            let html = `
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Pořadí</th>
+                            <th>Hráč</th>
+                            <th>Body</th>
+                            <th>Skóre</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            standings.forEach((player, index) => {
+                const isAdvancing = player.rank <= tournamentData.advancingCount;
+                html += `
+                    <tr class="${isAdvancing ? 'advancing' : ''}">
+                        <td><strong>${player.rank}.</strong></td>
+                        <td>
+                            ${player.name}
+                            ${isAdvancing ? '<span class="advancing-badge">POSTUPUJE</span>' : ''}
+                        </td>
+                        <td><strong>${player.points}</strong></td>
+                        <td>${player.scoreDiff >= 0 ? '+' : ''}${player.scoreDiff}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function calculateStandings(groupIndex) {
+            const group = tournamentData.groups[groupIndex];
+            const results = tournamentData.results[groupIndex];
+            
+            const standings = group.map((player, playerIndex) => {
+                let points = 0;
+                let wins = 0;
+                let scorePlus = 0;
+                let scoreMinus = 0;
+                
+                for (let opponentIndex = 0; opponentIndex < group.length; opponentIndex++) {
+                    if (playerIndex === opponentIndex) continue;
+                    
+                    const result = results[playerIndex][opponentIndex];
+                    if (result.score1 !== undefined && result.score2 !== undefined) {
+                        scorePlus += result.score1;
+                        scoreMinus += result.score2;
+                        
+                        if (result.score1 > result.score2) {
+                            points += 2;
+                            wins++;
+                        } else if (result.score1 === result.score2) {
+                            points += 1;
+                        }
+                    }
+                }
+                
+                return {
+                    name: player,
+                    points: points,
+                    wins: wins,
+                    scoreDiff: scorePlus - scoreMinus,
+                    scorePlus: scorePlus
+                };
+            });
+            
+            // Seřazení podle bodů, pak podle skóre
+            standings.sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                if (b.scoreDiff !== a.scoreDiff) return b.scoreDiff - a.scoreDiff;
+                return b.scorePlus - a.scorePlus;
+            });
+            
+            // Přidání pořadí
+            standings.forEach((player, index) => {
+                player.rank = index + 1;
+            });
+            
+            return standings;
+        }
+        
+        function finishGroupStage() {
+            // Kontrola, zda jsou vyplněny všechny výsledky
+            for (let g = 0; g < tournamentData.groups.length; g++) {
+                const group = tournamentData.groups[g];
+                for (let i = 0; i < group.length; i++) {
+                    for (let j = i + 1; j < group.length; j++) {
+                        const result = tournamentData.results[g][i][j];
+                        if (!result.score) {
+                            alert(`Nejsou vyplněny všechny výsledky ve skupině ${g + 1}.`);
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            createPlayoff();
+            saveTournament();
+            goToStep(7);
+        }
+        
+        function createPlayoff() {
+            const advancingPlayers = [];
+            
+            // Sesbírat postupující hráče ze všech skupin
+            tournamentData.groups.forEach((group, groupIndex) => {
+                const standings = calculateStandings(groupIndex);
+                const advancing = standings.slice(0, tournamentData.advancingCount);
+                advancingPlayers.push(...advancing.map(p => ({
+                    name: p.name,
+                    group: groupIndex,
+                    position: p.rank
+                })));
+            });
+            
+            const playoffCount = advancingPlayers.length;
+            
+            // Vytvoření pavouků
+            const rounds = [];
+            let currentRoundSize = playoffCount;
+            let matchNumber = 1;
+            
+            while (currentRoundSize > 1) {
+                const round = [];
+                const matchesInRound = currentRoundSize / 2;
+                
+                for (let i = 0; i < matchesInRound; i++) {
+                    round.push({
+                        matchNumber: matchNumber++,
+                        player1: null,
+                        player2: null,
+                        score1: null,
+                        score2: null,
+                        winner: null
+                    });
+                }
+                
+                rounds.push(round);
+                currentRoundSize = matchesInRound;
+            }
+            
+            // Nasazení hráčů do prvního kola
+            if (rounds.length > 0) {
+                advancingPlayers.forEach((player, index) => {
+                    const matchIndex = Math.floor(index / 2);
+                    if (index % 2 === 0) {
+                        rounds[0][matchIndex].player1 = player.name;
+                    } else {
+                        rounds[0][matchIndex].player2 = player.name;
+                    }
+                });
+            }
+            
+            tournamentData.playoff = {
+                rounds: rounds,
+                advancingPlayers: advancingPlayers
+            };
+            
+            saveTournament();
+            renderPlayoff();
+        }
+        
+        function renderPlayoff() {
+            const container = document.getElementById('playoffContainer');
+            const rounds = tournamentData.playoff.rounds;
+            
+            let html = '<div class="bracket">';
+            
+            rounds.forEach((round, roundIndex) => {
+                const roundName = getRoundName(roundIndex, rounds.length);
+                
+                html += `
+                    <div class="bracket-round">
+                        <h3>${roundName}</h3>
+                `;
+                
+                round.forEach((match) => {
+                    const isCompleted = match.winner !== null;
+                    
+                    html += `
+                        <div class="bracket-match ${isCompleted ? 'completed' : ''}">
+                            <div class="bracket-match-number">Zápas ${match.matchNumber}</div>
+                            <div class="match-player ${match.winner === 1 ? 'winner' : match.winner === 2 ? 'loser' : ''}">
+                                <span>${match.player1 || 'TBD'}</span>
+                                <input type="number" 
+                                       class="player-score"
+                                       style="width: 50px; padding: 5px; text-align: center;"
+                                       id="playoff_${roundIndex}_${match.matchNumber}_1"
+                                       value="${match.score1 || ''}"
+                                       placeholder="0"
+                                       ${match.winner ? 'disabled' : ''}>
+                            </div>
+                            <div class="match-vs">vs</div>
+                            <div class="match-player ${match.winner === 2 ? 'winner' : match.winner === 1 ? 'loser' : ''}">
+                                <span>${match.player2 || 'TBD'}</span>
+                                <input type="number" 
+                                       class="player-score"
+                                       style="width: 50px; padding: 5px; text-align: center;"
+                                       id="playoff_${roundIndex}_${match.matchNumber}_2"
+                                       value="${match.score2 || ''}"
+                                       placeholder="0"
+                                       ${match.winner ? 'disabled' : ''}>
+                            </div>
+                            ${!match.winner && match.player1 && match.player2 ? `
+                            <div style="text-align: center; padding: 10px;">
+                                <button class="btn btn-success" 
+                                        style="padding: 8px 15px; font-size: 0.9em;"
+                                        onclick="savePlayoffMatch(${roundIndex}, ${match.matchNumber})">
+                                    Uložit výsledek
+                                </button>
+                            </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function getRoundName(roundIndex, totalRounds) {
+            const fromEnd = totalRounds - roundIndex;
+            if (fromEnd === 1) return 'FINÁLE';
+            if (fromEnd === 2) return 'SEMIFINÁLE';
+            if (fromEnd === 3) return 'ČTVRTFINÁLE';
+            if (fromEnd === 4) return 'OSMIFINÁLE';
+            return `${roundIndex + 1}. kolo`;
+        }
+        
+        function savePlayoffMatch(roundIndex, matchNumber) {
+            const match = tournamentData.playoff.rounds[roundIndex].find(m => m.matchNumber === matchNumber);
+            
+            const score1 = parseInt(document.getElementById(`playoff_${roundIndex}_${matchNumber}_1`).value);
+            const score2 = parseInt(document.getElementById(`playoff_${roundIndex}_${matchNumber}_2`).value);
+            
+            if (isNaN(score1) || isNaN(score2)) {
+                alert('Zadejte platné skóre.');
+                return;
+            }
+            
+            if (score1 === score2) {
+                alert('V play-off nemůže být remíza.');
+                return;
+            }
+            
+            match.score1 = score1;
+            match.score2 = score2;
+            match.winner = score1 > score2 ? 1 : 2;
+            
+            // Postoupení vítěze do dalšího kola
+            const nextRoundIndex = roundIndex + 1;
+            if (nextRoundIndex < tournamentData.playoff.rounds.length) {
+                const nextRound = tournamentData.playoff.rounds[nextRoundIndex];
+                const nextMatchIndex = Math.floor((match.matchNumber - 1) / 2);
+                const nextMatch = nextRound[nextMatchIndex];
+                
+                const winner = match.winner === 1 ? match.player1 : match.player2;
+                
+                if ((match.matchNumber - 1) % 2 === 0) {
+                    nextMatch.player1 = winner;
+                } else {
+                    nextMatch.player2 = winner;
+                }
+            }
+            
+            saveTournament();
+            alert('Výsledek byl uložen!');
+            renderPlayoff();
+        }
+        
+        function generateFinalResults() {
+            // Kontrola, zda je play-off dokončeno
+            const lastRound = tournamentData.playoff.rounds[tournamentData.playoff.rounds.length - 1];
+            if (!lastRound[0].winner) {
+                alert('Nejsou dokončeny všechny zápasy play-off.');
+                return;
+            }
+            
+            // Vytvoření konečného pořadí
+            const ranking = [];
+            const rounds = tournamentData.playoff.rounds;
+            
+            // Finále - 1. a 2. místo
+            const finalMatch = rounds[rounds.length - 1][0];
+            if (finalMatch.winner === 1) {
+                ranking.push({name: finalMatch.player1, position: 1});
+                ranking.push({name: finalMatch.player2, position: 2});
+            } else {
+                ranking.push({name: finalMatch.player2, position: 1});
+                ranking.push({name: finalMatch.player1, position: 2});
+            }
+            
+            // Semifinále a další
+            for (let r = rounds.length - 2; r >= 0; r--) {
+                rounds[r].forEach(match => {
+                    const loser = match.winner === 1 ? match.player2 : match.player1;
+                    ranking.push({name: loser, position: ranking.length + 1});
+                });
+            }
+            
+            tournamentData.finalRanking = ranking;
+            saveTournament();
+            
+            goToStep(8);
+            downloadResults();
+        }
+        
+        function downloadResults() {
+            const html = generateResultsHTML();
+            const blob = new Blob([html], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `vysledky_${tournamentData.name.replace(/\s+/g, '_')}.html`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function generateResultsHTML() {
+            const ranking = tournamentData.finalRanking;
+            
+            let html = `<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${tournamentData.name} - Výsledky</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .content { padding: 40px 30px; }
+        
+        .section {
+            margin: 40px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .ranking-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .ranking-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .ranking-table tr:first-child td {
+            background: #ffd700;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .ranking-table tr:nth-child(2) td {
+            background: #e8e8e8;
+            font-weight: bold;
+        }
+        
+        .ranking-table tr:nth-child(3) td {
+            background: #cd7f32;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .group-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .group-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+        
+        .results-table th {
+            background: #667eea;
+            color: white;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+        
+        .results-table td {
+            text-align: center;
+            padding: 8px 5px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .results-table .player-name {
+            text-align: left;
+            font-weight: 600;
+            background: #f8f9fa;
+        }
+        
+        .results-table .diagonal {
+            background: #e9ecef;
+            color: #999;
+        }
+        
+        .results-table tr.advancing {
+            background: #d4edda;
+        }
+        
+        .advancing-badge {
+            background: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+        
+        .bracket {
+            display: flex;
+            gap: 40px;
+            overflow-x: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+        }
+        
+        .bracket-round {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            min-width: 220px;
+        }
+        
+        .bracket-round h3 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .bracket-match {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            margin: 20px 0 15px 0;
+            position: relative;
+        }
+        
+        .bracket-match.completed { border-color: #28a745; }
+        
+        .match-player {
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .match-player:last-child { border-bottom: none; }
+        .match-player.winner { background: #d4edda; font-weight: bold; }
+        .match-player.loser { background: #f8f9fa; opacity: 0.6; }
+        
+        .player-score {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .match-vs {
+            text-align: center;
+            padding: 5px;
+            font-size: 0.8em;
+            color: #999;
+            background: #f8f9fa;
+        }
+        
+        .bracket-match-number {
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8em; }
+            .content { padding: 20px 15px; }
+            .bracket { min-width: 800px; }
+            .groups-grid { grid-template-columns: 1fr; }
         }
         
         @media print {
@@ -2459,7 +1919,7 @@
 
             // KONEČNÉ POŘADÍ
             html += `
-            <div class="section final-ranking">
+            <div class="section">
                 <h2>🏆 Konečné pořadí</h2>
                 <table class="ranking-table">
                     <thead>
